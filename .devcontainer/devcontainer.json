@@ -58,11 +58,12 @@
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
       "extensions": [
-        "ms-dotnettools.csharp",
-        "ms-vscode.PowerShell",
-        "ms-vscode.vscode-node-azure-pack",
-        "VisualStudioExptTeam.vscodeintellicode"
-      ],
+		"ms-dotnettools.csharp",
+		"ms-vscode.PowerShell",
+		"ms-vscode.vscode-node-azure-pack",
+		"VisualStudioExptTeam.vscodeintellicode",
+		"oderwat.indent-rainbow"
+	],
       "settings": {
         // Uncomment if you want to disable the minimap view
         // "editor.minimap.enabled": false,
