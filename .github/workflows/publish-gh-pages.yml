@@ -73,6 +73,7 @@ jobs:
       with:
         path: published/wwwroot
 
+
   deploy:
     name: Deploy App to GitHub Pages
     if: github.ref == 'refs/heads/main'
@@ -89,3 +90,28 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+
+  pr-preview:
+    name: Deploy PR Preview to GitHub Pages
+    if: github.event_name == 'pull_request'
+    needs:
+      - build_test_artifact
+    runs-on: ubuntu-latest
+    environment:
+      name: pr-${{ github.head_ref }}
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy PR Preview to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  pr-preview-cleanup:
+    name: Remove PR Preview Deployment
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove PR Preview Deployment
+        uses: actions/deploy-pages@v4
+        with:
+          deployment: delete
+          environment: pr-${{ github.head_ref }}
