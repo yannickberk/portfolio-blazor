@@ -21,6 +21,19 @@
         </ul>
         <hr />
         <p style="padding: 1rem 3rem 0;">@aboutme.DetailOrQuote</p>
+        @if (aboutme.CurrentlyLearning is not null && aboutme.CurrentlyLearning.Any())
+        {
+            <hr />
+            <div style="padding: 1rem 3rem 0; text-align: left;">
+                <h3>Currently learning</h3>
+                <ul style="font-size: 1rem; margin-left: 1rem;">
+                @foreach (var item in aboutme.CurrentlyLearning)
+                {
+                    <li key="@item">@item</li>
+                }
+                </ul>
+            </div>
+        }
     }
     </div>
 </section>
