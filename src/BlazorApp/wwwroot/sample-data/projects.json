@@ -1,5 +1,25 @@
 [
   {
+    "title": "Cross-Platform Apps",
+    "description": "Delivering seamless experiences on Android & iOS with MAUI.",
+    "url": ""
+  },
+  {
+    "title": "Backend Services",
+    "description": "Architecting RESTful APIs and microservices with .NET.",
+    "url": ""
+  },
+  {
+    "title": "DevOps",
+    "description": "Automating deployments and maintaining code quality with CI/CD pipelines.",
+    "url": ""
+  },
+  {
+    "title": "Open Source",
+    "description": "Occasional contributor to community-driven projects.",
+    "url": ""
+  },
+  {
     "title": "This Resume Site",
     "description": "Created from githubs education/codespaces-project-template-dotnet and deployed to GitHub pages.",
     "url": "https://github.com/yannickberk/portfolio-blazor"
