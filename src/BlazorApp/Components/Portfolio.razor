@@ -18,9 +18,16 @@
             @foreach (var project in projects)
             {
                 <div class="box" key="@project.Title">
-                    <a href="@project.Url" target="_blank" rel="noopener noreferrer">
+                    @if (!string.IsNullOrWhiteSpace(project.Url))
+                    {
+                        <a href="@project.Url" target="_blank" rel="noopener noreferrer">
+                            <h3 style="flex-basis: 40px;">@project.Title</h3>
+                        </a>
+                    }
+                    else
+                    {
                         <h3 style="flex-basis: 40px;">@project.Title</h3>
-                    </a>
+                    }
                     <p class="small">@project.Description</p>
                 </div>
             }
