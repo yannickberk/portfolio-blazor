@@ -28,26 +28,6 @@ jobs:
       with:
         dotnet-version: '9.x'
 
-    # - name: Set basepath on index.html
-    #   shell: pwsh
-    #   run: |
-    #     $filepath = "./src/BlazorApp/wwwroot/index.html"
-    #     $repository = "${{ github.repository }}" -replace "${{ github.repository_owner }}", ""
-
-    #     $html = Get-Content -Path $filepath
-    #     $html -replace "<base href=`"/`" />", "<base href=`"$repository/`" />" | Out-File -Path $filepath -Force
-
-    # - name: Set basepath on JSON objects
-    #   shell: pwsh
-    #   run: |
-    #     $filepath = "./src/BlazorApp/wwwroot/sample-data"
-    #     $repository = "${{ github.repository }}" -replace "${{ github.repository_owner }}", ""
-
-    #     Get-ChildItem -Path $filepath -Filter "*.json" | ForEach-Object {
-    #       $json = Get-Content -Path $_.FullName
-    #       $json.Replace("../", "$repository/") | Out-File -Path $_.FullName -Force
-    #     }
-
     - name: Restore NuGet packages
       shell: bash
       run: |
@@ -63,10 +43,19 @@ jobs:
       run: |
         dotnet test . -c Release
 
-    - name: Publish artifact
+    - name: Publish artifact (main or PR)
       shell: bash
       run: |
-        dotnet publish src/BlazorApp -c Release -o published
+        if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+          dotnet publish src/BlazorApp -c Release -o published/wwwroot
+        else
+          if [[ -z "$GITHUB_HEAD_REF" ]]; then
+            echo "Error: GITHUB_HEAD_REF is not set. Cannot determine PR folder name."
+            exit 1
+          fi
+          pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
+          dotnet publish src/BlazorApp -c Release -o "$pr_folder"
+        fi
 
     - name: Upload artifact for web
       uses: actions/upload-pages-artifact@v4
@@ -101,45 +90,9 @@ jobs:
       name: pr-${{ github.head_ref }}
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.x'
-
-      - name: Restore NuGet packages
-        run: dotnet restore .
-
-      - name: Build solution
-        run: dotnet build .
-
-      - name: Test solution
-        run: dotnet test . -c Release
-
-      - name: Publish artifact
-        run: dotnet publish src/BlazorApp -c Release -o published
-
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy PR preview to subfolder
-        run: |
-          rm -rf pr-${{ github.head_ref }}
-          mkdir -p pr-${{ github.head_ref }}
-          cp -r published/wwwroot/* pr-${{ github.head_ref }}/
-
-      - name: Commit and push PR preview
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add pr-${{ github.head_ref }}
-          git commit -m "Deploy PR preview for ${{ github.head_ref }}"
-          git push
+      - name: Deploy PR Preview to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   pr-preview-cleanup:
     name: Remove PR Preview Deployment
@@ -151,13 +104,3 @@ jobs:
         with:
           deployment: delete
           environment: pr-${{ github.head_ref }}
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Remove PR preview subfolder
-        run: |
-          git rm -r --ignore-unmatch pr-${{ github.head_ref }}
-          git commit -m "Remove PR preview subfolder for ${{ github.head_ref }}"
-          git push
