@@ -61,8 +61,11 @@ jobs:
         git fetch origin "$GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
         git checkout "$GITHUB_HEAD_REF"
         pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
-        dotnet publish src/BlazorApp -c Release -o "$pr_folder"
-
+        dotnet publish src/BlazorApp -c Release -o "$pr_folder/tmp"
+        # Move contents from $pr_folder/tmp/wwwroot to $pr_folder
+        mv "$pr_folder/tmp/wwwroot" "$pr_folder"
+        rm -rf "$pr_folder/tmp"
+        
     - name: Upload artifact for web
       uses: actions/upload-pages-artifact@v4
       with:
