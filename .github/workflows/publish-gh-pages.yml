@@ -43,29 +43,10 @@ jobs:
       run: |
         dotnet test . -c Release
 
-    - name: Publish main branch artifact to root
+    - name: Publish artifact
       shell: bash
       run: |
-        # Always build main branch output to root
-        git fetch origin main:main
-        git checkout main
         dotnet publish src/BlazorApp -c Release -o published
-
-    - name: Publish PR branch artifact to subfolder
-      shell: bash
-      if: env.GITHUB_HEAD_REF != ''
-      env:
-        GITHUB_HEAD_REF: ${{ github.head_ref }}
-      run: |
-        # Fetch PR branch from origin before checkout
-        git fetch origin "$GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
-        git checkout "$GITHUB_HEAD_REF"
-        pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
-        dotnet publish src/BlazorApp -c Release -o "$pr_folder/tmp"
-        # Move contents from $pr_folder/tmp/wwwroot to $pr_folder
-        mkdir -p "$pr_folder"
-        mv "$pr_folder/tmp/wwwroot/"* "$pr_folder/"
-        rm -rf "$pr_folder/tmp"
         
     - name: Upload artifact for web
       uses: actions/upload-pages-artifact@v4
