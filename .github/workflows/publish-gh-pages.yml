@@ -104,6 +104,9 @@ jobs:
       - name: Deploy PR Preview to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          base_path: pr-${{ github.head_ref }}
+          
 
   pr-preview-cleanup:
     name: Remove PR Preview Deployment
@@ -115,3 +118,13 @@ jobs:
         with:
           deployment: delete
           environment: pr-${{ github.head_ref }}
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Remove PR preview subfolder
+        run: |
+          git rm -r --ignore-unmatch pr-${{ github.head_ref }}
+          git commit -m "Remove PR preview subfolder for ${{ github.head_ref }}"
+          git push
