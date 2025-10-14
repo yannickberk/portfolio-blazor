@@ -82,17 +82,18 @@ h2 {
     word-break: break-word;
   }
   section.light {
-    padding: 2rem 0.5rem;
+    padding: 1rem 0.5rem;
   }
   section.dark {
-    min-height: 60vh;
-    padding: 2rem 0.5rem;
+    min-height: 100vh;
+    padding: 0;
   }
   section img.background {
     width: 100vw;
-    height: 40vh;
+    height: 100vh;
     left: 0;
     transform: none;
+    object-fit: cover;
   }
   ul, ol {
     padding-left: 1.2rem;
@@ -103,6 +104,98 @@ h2 {
   div#main {
     padding: 0;
     margin: 0;
+  }
+  
+  /* Fix down arrow centering */
+  #home div[style*="bottom: 8rem"] {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  /* Fix home section text positioning on mobile */
+  #home div[style*="top: 30%"] {
+    top: 40% !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    text-align: center !important;
+  }
+  
+  /* Fix About section width and skills layout */
+  #about div[style*="width: 50%"] {
+    width: 95% !important;
+    margin: 1rem auto !important;
+    padding: 2rem 1rem !important;
+  }
+  
+  /* Fix skills list - make it two centered columns with better width usage */
+  #about ul[style*="columns: 2"] {
+    columns: 2 !important;
+    column-gap: 2rem !important;
+    margin: 1rem auto !important;
+    font-size: 1rem !important;
+    max-width: 80% !important;
+    text-align: left !important;
+    list-style-position: inside !important;
+    padding: 0 !important;
+  }
+  
+  #about ul[style*="columns: 2"] li {
+    margin-bottom: 0.5rem !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Fix currently learning section - center it */
+  #about div[style*="padding: 1rem 3rem 0"] {
+    padding: 1rem 0 0 !important;
+    text-align: center !important;
+  }
+  
+  #about div[style*="padding: 1rem 3rem 0"] ul {
+    text-align: left !important;
+    display: inline-block !important;
+    margin: 0.5rem auto !important;
+  }
+  
+  /* Fix quote section */
+  #about p[style*="padding: 1rem 3rem 0"] {
+    padding: 1rem 0 0 !important;
+  }
+  
+  /* Fix portfolio layout */
+  #portfolio div[style*="display: flex"] {
+    flex-direction: column !important;
+    padding-top: 1rem !important;
+  }
+  
+  #portfolio div[style*="max-width: 40%"] {
+    max-width: 100% !important;
+    margin-bottom: 2rem;
+  }
+  
+  .container {
+    grid-template-columns: 1fr !important;
+    margin: 10px auto !important;
+    padding: 0 10px;
+    max-width: 100%;
+  }
+  
+  .container .box {
+    margin: 0 0 1rem 0;
+    padding: 16px 12px;
+  }
+  
+  /* Improve hr margins on mobile */
+  hr {
+    margin: 1.5rem 0;
+  }
+  
+  /* Better text sizing on mobile */
+  p.large {
+    font-size: 1.2rem;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
   }
 }
 
