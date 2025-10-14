@@ -1,0 +1,225 @@
+html {
+  scroll-behavior: smooth;
+  --breakpoint-mobile: #{$breakpoint-mobile};
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: $font-primary;
+  --semiwhite-bg: #{$semiwhite-bg};
+}
+
+div#main {
+  display: flex;
+  flex-direction: column;
+}
+
+section {
+  position: relative;
+
+  &.dark {
+    min-height: 100vh;
+    color: white;
+    background: $background-dark;
+  }
+
+  &.light {
+    color: $text-color;
+    background: $background-light;
+    padding: $spacing-xxl 0;
+  }
+
+  img.background {
+    width: 100vmax;
+    height: 100%;
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+    object-fit: cover;
+  }
+}
+
+// Typography
+h1 {
+  font-weight: 300;
+  font-family: $font-heading;
+  font-size: 7rem;
+  margin: 0;
+}
+
+h2 {
+  font-weight: 400;
+  font-size: 2rem;
+  margin: 0;
+  text-align: center;
+}
+
+h3 {
+  font-weight: 400;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 0;
+  font-weight: 300;
+
+  &.large {
+    font-size: 24px;
+  }
+
+  &.small {
+    font-size: 15px;
+  }
+}
+
+hr {
+  margin: 2.5rem;
+}
+
+li {
+  line-height: 1.7;
+
+  &::marker {
+    color: $primary-color;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: $text-color;
+
+  &:hover {
+    color: $primary-color;
+  }
+}
+
+img.social-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.container {
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 330px 300px;
+  grid-gap: 20px;
+
+  .box {
+    background-color: var(--semiwhite-bg);
+    border-radius: 10px;
+    padding: 24px 16px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    border: 1px solid rgb(204, 204, 204);
+    text-align: center;
+  }
+}
+
+.scroll-arrow {
+  display: inline-block;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(8px);
+    opacity: 0.8;
+
+    img {
+      filter: brightness(0.8) drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+  }
+
+  img {
+    transition: all 0.3s ease;
+    filter: brightness(1);
+  }
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: $breakpoint-mobile) {
+  body {
+    font-size: 1rem;
+    overflow-x: hidden;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    word-break: break-word;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    word-break: break-word;
+  }
+  
+  section.light {
+    padding: $spacing-sm 0rem;
+  }
+  
+  ul, ol {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  div#main {
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Mobile-specific scroll arrow adjustments */
+  .scroll-arrow {
+    padding: $spacing-xs;
+
+    &:hover {
+      transform: translateY(4px);
+    }
+  }
+  
+  .container {
+    grid-template-columns: 1fr;
+    margin: 10px auto;
+    padding: 0 10px;
+    max-width: 100%;
+
+    .box {
+      margin: 0 0 1rem 0;
+      padding: 16px 12px;
+    }
+  }
+  
+  /* Improve hr margins on mobile */
+  hr {
+    margin: 1.5rem 0;
+  }
+  
+  /* Better text sizing on mobile */
+  p.large {
+    font-size: 1.2rem;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes slideInLeft {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}

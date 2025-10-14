@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <Target Name="BuildSass" BeforeTargets="Build">
+    <Exec Command="npm run sass:build" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
 </Project>

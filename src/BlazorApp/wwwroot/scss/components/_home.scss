@@ -1,0 +1,31 @@
+.hero-text {
+  position: absolute;
+  top: 30%;
+  left: 2rem;
+}
+
+.scroll-arrow-container {
+  position: absolute;
+  bottom: 8rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.down-arrow {
+  height: 3rem;
+  width: 3rem;
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .hero-text {
+    top: 40%;
+    left: $spacing-sm;
+    right: $spacing-sm;
+    text-align: center;
+  }
+  
+  .scroll-arrow-container {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

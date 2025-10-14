@@ -1,0 +1,38 @@
+footer {
+  background: $background-dark;
+  color: white;
+  padding: $spacing-xl $spacing-md;
+  text-align: center;
+  
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    
+    a {
+      color: white;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: $secondary-color;
+        transform: translateY(-2px);
+      }
+    }
+  }
+  
+  p {
+    margin: 0;
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  footer {
+    padding: $spacing-md $spacing-sm;
+    
+    .social-links {
+      gap: $spacing-sm;
+    }
+  }
+}

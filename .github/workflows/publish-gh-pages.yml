@@ -28,6 +28,23 @@ jobs:
       with:
         dotnet-version: '9.x'
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install npm dependencies
+      shell: bash
+      run: |
+        cd src/BlazorApp
+        npm install
+
+    - name: Build Sass
+      shell: bash
+      run: |
+        cd src/BlazorApp
+        npm run sass:build
+
     - name: Restore NuGet packages
       shell: bash
       run: |
