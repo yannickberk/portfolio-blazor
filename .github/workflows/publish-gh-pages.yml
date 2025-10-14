@@ -49,7 +49,7 @@ jobs:
         # Always build main branch output to root
         git fetch origin main:main
         git checkout main
-        dotnet publish src/BlazorApp -c Release -o published/wwwroot
+        dotnet publish src/BlazorApp -c Release -o published
 
     - name: Publish PR branch artifact to subfolder
       shell: bash
