@@ -43,19 +43,24 @@ jobs:
       run: |
         dotnet test . -c Release
 
-    - name: Publish artifact (main or PR)
+    - name: Publish main branch artifact to root
       shell: bash
       run: |
-        if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
-          dotnet publish src/BlazorApp -c Release -o published/wwwroot
-        else
-          if [[ -z "$GITHUB_HEAD_REF" ]]; then
-            echo "Error: GITHUB_HEAD_REF is not set. Cannot determine PR folder name."
-            exit 1
-          fi
-          pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
-          dotnet publish src/BlazorApp -c Release -o "$pr_folder"
-        fi
+        # Always build main branch output to root
+        git fetch origin main:main
+        git checkout main
+        dotnet publish src/BlazorApp -c Release -o published/wwwroot
+
+    - name: Publish PR branch artifact to subfolder
+      shell: bash
+      if: env.GITHUB_HEAD_REF != ''
+      env:
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+      run: |
+        # Build PR branch output to subfolder
+        git checkout "$GITHUB_HEAD_REF"
+        pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
+        dotnet publish src/BlazorApp -c Release -o "$pr_folder"
 
     - name: Upload artifact for web
       uses: actions/upload-pages-artifact@v4
