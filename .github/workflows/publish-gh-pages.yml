@@ -1,6 +1,6 @@
 name: Publish Blazor App to GitHub Pages
 
-on: [ push, workflow_dispatch, pull_request ]
+on: [ workflow_dispatch, pull_request ]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -101,12 +101,45 @@ jobs:
       name: pr-${{ github.head_ref }}
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy PR Preview to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          base_path: pr-${{ github.head_ref }}
-          
+          dotnet-version: '9.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore .
+
+      - name: Build solution
+        run: dotnet build .
+
+      - name: Test solution
+        run: dotnet test . -c Release
+
+      - name: Publish artifact
+        run: dotnet publish src/BlazorApp -c Release -o published
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy PR preview to subfolder
+        run: |
+          rm -rf pr-${{ github.head_ref }}
+          mkdir -p pr-${{ github.head_ref }}
+          cp -r published/wwwroot/* pr-${{ github.head_ref }}/
+
+      - name: Commit and push PR preview
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add pr-${{ github.head_ref }}
+          git commit -m "Deploy PR preview for ${{ github.head_ref }}"
+          git push
 
   pr-preview-cleanup:
     name: Remove PR Preview Deployment
