@@ -57,7 +57,8 @@ jobs:
       env:
         GITHUB_HEAD_REF: ${{ github.head_ref }}
       run: |
-        # Build PR branch output to subfolder
+        # Fetch PR branch from origin before checkout
+        git fetch origin "$GITHUB_HEAD_REF:$GITHUB_HEAD_REF"
         git checkout "$GITHUB_HEAD_REF"
         pr_folder="published/wwwroot/${GITHUB_HEAD_REF}"
         dotnet publish src/BlazorApp -c Release -o "$pr_folder"
