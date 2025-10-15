@@ -1,5 +1,11 @@
 @use "../variables";
 
+section {
+  &#about{
+    padding: variables.$spacing-lg 0;
+  }
+}
+
 .about-content {
   position: relative;
   left: 50%;
@@ -29,6 +35,12 @@
 }
 
 @media (max-width: variables.$breakpoint-mobile) {
+  
+  section {
+    &#about{
+      padding: variables.$spacing-sm 0;
+    }
+  }
   .about-content {
     width: 85vw;
     padding: variables.$spacing-sm;
