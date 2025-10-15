@@ -6,6 +6,7 @@ html {
 }
 
 body {
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -152,7 +153,6 @@ img.social-icon {
 @media (max-width: variables.$breakpoint-mobile) {
   body {
     font-size: 1rem;
-    overflow-x: hidden;
   }
   
   h1 {
