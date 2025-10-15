@@ -1,42 +1,46 @@
 @use "../variables";
 
-.about-container {
-  display: flex;
-  flex-direction: row;
-  padding-top: variables.$spacing-lg;
+.about-content {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50vw;
+  background: variables.$semiwhite-bg-strong;
+  border-radius: variables.$border-radius-lg;
+  text-align: center;
+  padding: variables.$spacing-xl;
+  margin: variables.$spacing-lg 0;
 }
 
-.about-image-container {
-  max-width: 40%;
-  align-self: center;
+.skills-list {
+  text-align: left;
+  columns: 2;
+  font-size: variables.$font-size-md;
+  margin: variables.$spacing-md variables.$spacing-lg;
+  gap: variables.$spacing-lg;
 }
 
-.about-hero-image {
-  height: 90%;
-  width: 100%;
-  object-fit: cover;
-  animation: slideInLeft 1s ease-out 0s 1;
-}
-
-.about-description {
-  max-width: 60%;
-  align-self: center;
-  padding: 0 variables.$spacing-lg;
+.currently-learning {
+  ul {
+    font-style: italic;
+    font-size: variables.$font-size-sm;
+    text-align: left;
+  }
 }
 
 @media (max-width: variables.$breakpoint-mobile) {
-  .about-container {
-    flex-direction: column;
-    padding-top: variables.$spacing-sm;
+  .about-content {
+    width: 85vw;
+    padding: variables.$spacing-sm;
+    border-radius: variables.$border-radius-md;
+    margin: variables.$spacing-sm 0;
   }
   
-  .about-image-container {
-    max-width: 100%;
-    margin-bottom: variables.$spacing-md;
-  }
-  
-  .about-description {
-    max-width: 100%;
-    padding: 0 variables.$spacing-sm;
+  .skills-list {
+    text-align: left;
+    columns: 2;
+    font-size: variables.$font-size-md;
+    margin: variables.$spacing-sm variables.$spacing-md;
+    gap: variables.$spacing-sm;
   }
 }

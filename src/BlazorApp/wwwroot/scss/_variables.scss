@@ -5,10 +5,14 @@ $text-color: black;
 $background-light: rgba(255, 255, 255, 0.35);
 $background-dark: rgba(0, 0, 0, 0.25);
 $semiwhite-bg: rgba(255, 255, 255, 0.67);
+$semiwhite-bg-strong: rgba(255, 255, 255, 0.8);
 
 // Typography
 $font-primary: "Montserrat", sans-serif;
 $font-heading: "Cormorant Garamond", serif;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.25rem;
 
 // Breakpoints
 $breakpoint-mobile: 800px;
@@ -21,3 +25,9 @@ $spacing-md: 2rem;
 $spacing-lg: 3rem;
 $spacing-xl: 4rem;
 $spacing-xxl: 8rem;
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;

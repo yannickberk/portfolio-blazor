@@ -31,7 +31,7 @@ section {
   &.light {
     color: variables.$text-color;
     background: variables.$background-light;
-    padding: variables.$spacing-xxl 0;
+    padding: variables.$spacing-xl 0;
   }
 
   img.background {
@@ -117,7 +117,7 @@ img.social-icon {
 
   .box {
     background-color: var(--semiwhite-bg);
-    border-radius: 10px;
+    border-radius: variables.$border-radius-lg;
     padding: 24px 16px;
     display: flex;
     justify-content: flex-start;
