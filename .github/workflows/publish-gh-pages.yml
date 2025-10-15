@@ -101,14 +101,3 @@ jobs:
       - name: Deploy PR Preview to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  pr-preview-cleanup:
-    name: Remove PR Preview Deployment
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove PR Preview Deployment
-        uses: actions/deploy-pages@v4
-        with:
-          deployment: delete
-          environment: pr-${{ github.head_ref }}
