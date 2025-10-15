@@ -1,6 +1,97 @@
 <div id="header">
-    <a href="#home" target="_top">Home</a>
-    <a href="#about" target="_top">About</a>
-    <a href="#portfolio" target="_top">Portfolio</a>
-    <a href="#contact" target="_top">Contact</a>
+    <a href="#home" target="_top" class="nav-link @(visibleSections.Contains("home") ? "active" : "")">Home</a>
+    <a href="#about" target="_top" class="nav-link @(visibleSections.Contains("about") ? "active" : "")">About</a>
+    <a href="#portfolio" target="_top" class="nav-link @(visibleSections.Contains("portfolio") ? "active" : "")">Portfolio</a>
+    <a href="#contact" target="_top" class="nav-link @(visibleSections.Contains("contact") ? "active" : "")">Contact</a>
 </div>
+
+<script>
+    window.headerInterop = {
+        updateVisibleSections: function(dotNetHelper) {
+            const sections = ['home', 'about', 'portfolio', 'contact'];
+            
+            function updateVisible() {
+                const visibleSections = [];
+                const headerElement = document.getElementById('header');
+                const navHeight = headerElement ? headerElement.offsetHeight : 80; // Get actual header height
+                const viewportTop = window.scrollY + navHeight;
+                const viewportBottom = window.scrollY + window.innerHeight;
+                
+                for (let section of sections) {
+                    const element = document.getElementById(section);
+                    if (element) {
+                        const sectionTop = element.offsetTop;
+                        const sectionBottom = sectionTop + element.offsetHeight;
+                        const sectionHeight = element.offsetHeight;
+                        
+                        // Calculate visible height of the section
+                        const visibleTop = Math.max(sectionTop, viewportTop);
+                        const visibleBottom = Math.min(sectionBottom, viewportBottom);
+                        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+                        
+                        // Calculate available viewport height (excluding header)
+                        const availableViewportHeight = window.innerHeight - navHeight;
+                        
+                        // Check if at least one-third of the section is visible
+                        // OR if the section covers at least one-third of the available viewport
+                        const sectionVisibilityRatio = visibleHeight / sectionHeight;
+                        const viewportCoverageRatio = visibleHeight / availableViewportHeight;
+                        
+                        if (sectionVisibilityRatio >= 0.33 || viewportCoverageRatio >= 0.33) {
+                            visibleSections.push(section);
+                        }
+                    }
+                }
+                
+                // If no sections meet the threshold, default to home if near top
+                if (visibleSections.length === 0 && window.scrollY < 100) {
+                    visibleSections.push('home');
+                }
+                
+                dotNetHelper.invokeMethodAsync('UpdateVisibleSections', visibleSections);
+            }
+            
+            window.addEventListener('scroll', updateVisible);
+            window.addEventListener('resize', updateVisible);
+            updateVisible(); // Initial call
+            
+            return () => {
+                window.removeEventListener('scroll', updateVisible);
+                window.removeEventListener('resize', updateVisible);
+            };
+        }
+    };
+</script>
+
+@inject IJSRuntime JS
+
+@code {
+    private HashSet<string> visibleSections = new HashSet<string> { "home" };
+    private IJSObjectReference? jsModule;
+    private DotNetObjectReference<Header>? objRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("headerInterop.updateVisibleSections", objRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task UpdateVisibleSections(string[] sections)
+    {
+        var newVisibleSections = new HashSet<string>(sections);
+        if (!visibleSections.SetEquals(newVisibleSections))
+        {
+            visibleSections = newVisibleSections;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
+    }
+}

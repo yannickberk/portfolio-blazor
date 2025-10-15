@@ -1,16 +1,16 @@
 <section class="light" id="portfolio">
     <h2>Portfolio</h2>
-    <div style="display: flex; flex-direction: row; padding-top: 3rem;">
+    <div class="portfolio-container">
     @if (projects is null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <div style="max-width: 40%; align-self: center;">
+        <div class="portfolio-image-container">
             @if (hero is not null)
             {
-                <img src="@(hero.Src)" style="height: 90%; width: 100%; object-fit: cover; animation: slideInLeft 1s ease-out 0s 1;" 
+                <img src="@(hero.Src)" class="portfolio-hero-image" 
                     alt="@(hero.Alt)" />
             }
         </div>
@@ -21,12 +21,12 @@
                     @if (!string.IsNullOrWhiteSpace(project.Url))
                     {
                         <a href="@project.Url" target="_blank" rel="noopener noreferrer">
-                            <h3 style="flex-basis: 40px;">@project.Title</h3>
+                            <h3 class="project-title">@project.Title</h3>
                         </a>
                     }
                     else
                     {
-                        <h3 style="flex-basis: 40px;">@project.Title</h3>
+                        <h3 class="project-title">@project.Title</h3>
                     }
                     <p class="small">@project.Description</p>
                 </div>

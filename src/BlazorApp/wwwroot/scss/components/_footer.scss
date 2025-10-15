@@ -1,0 +1,18 @@
+@use "../variables";
+
+#contact {
+  background-color: variables.$primary-color;
+  padding: 1rem 0 1rem;
+
+  .social-icons-container {
+    display: flex;
+    justify-content: center;
+    gap: variables.$spacing-md;
+  }
+
+  p.footer-credit {
+    margin-top: 0;
+    color: variables.$text-color-light;
+    text-align: center;
+  }
+}

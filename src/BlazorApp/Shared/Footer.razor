@@ -1,13 +1,13 @@
-<div id="contact" style="background-color: @PrimaryColor;">
+<div id="contact">
     @if (property is null)
     {
-        <div style="display: flex; justify-content: center; gap: 2.5rem;">
+        <div class="social-icons-container">
             <p><em>Loading...</em></p>
         </div>
     }
     else if (icons is not null)
     {
-        <div style="display: flex; justify-content: center; gap: 2.5rem;">
+        <div class="social-icons-container">
             @if (string.IsNullOrWhiteSpace(property.Email) is false)
             {
                 <a href="mailto:@(property.Email)">
@@ -57,7 +57,7 @@
                 </a>
             }
         </div>
-        <p class="small" style="margin-top: 0; color: white;">Created by @property.Name</p>
+        <p class="small footer-credit">Created by @property.Name</p>
     }
 </div>
 

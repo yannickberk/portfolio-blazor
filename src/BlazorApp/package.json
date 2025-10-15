@@ -1,0 +1,13 @@
+{
+  "name": "blazor-portfolio",
+  "version": "1.0.0",
+  "description": "Sass compilation for Blazor Portfolio",
+  "scripts": {
+    "sass:build": "sass wwwroot/scss:wwwroot/css --style=compressed",
+    "sass:watch": "sass wwwroot/scss:wwwroot/css --watch --style=compressed",
+    "build": "npm run sass:build"
+  },
+  "devDependencies": {
+    "sass": "^1.69.0"
+  }
+}

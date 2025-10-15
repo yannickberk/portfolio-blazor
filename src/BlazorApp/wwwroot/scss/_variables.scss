@@ -1,0 +1,41 @@
+// Colors
+$primary-color: #4e567e;
+$secondary-color: #D2F1E4;
+$text-color: black;
+$text-color-light: white;
+$background-light: rgba(255, 255, 255, 0.35);
+$background-dark: rgba(0, 0, 0, 0.25);
+$semiwhite-bg: rgba(255, 255, 255, 0.67);
+$semiwhite-bg-strong: rgba(255, 255, 255, 0.8);
+
+// Typography
+$font-primary: "Montserrat", sans-serif;
+$font-heading: "Cormorant Garamond", serif;
+$font-heading-size-xxs: 1.25rem;
+$font-heading-size-xs: 1.5rem;
+$font-heading-size-sm: 2rem;
+$font-heading-size-md: 5rem;
+$font-heading-size-lg: 7rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.25rem;
+$font-size-xl: 1.5rem;
+$font-size-xxl: 2rem;
+
+// Breakpoints
+$breakpoint-mobile: 800px;
+
+// Spacing
+$spacing-xxs: 0.25rem;
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 2rem;
+$spacing-lg: 3rem;
+$spacing-xl: 4rem;
+$spacing-xxl: 8rem;
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;

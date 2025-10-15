@@ -1,0 +1,58 @@
+@use "../variables";
+
+section {
+  &#about{
+    padding: variables.$spacing-lg 0;
+  }
+}
+
+.about-content {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50vw;
+  background: variables.$semiwhite-bg-strong;
+  border-radius: variables.$border-radius-lg;
+  text-align: center;
+  padding: variables.$spacing-xl;
+  margin: variables.$spacing-lg 0;
+}
+
+.skills-list {
+  text-align: left;
+  columns: 2;
+  font-size: variables.$font-size-md;
+  margin: variables.$spacing-md variables.$spacing-lg;
+  gap: variables.$spacing-lg;
+}
+
+.currently-learning {
+  ul {
+    font-style: italic;
+    font-size: variables.$font-size-sm;
+    text-align: left;
+  }
+}
+
+@media (max-width: variables.$breakpoint-mobile) {
+  
+  section {
+    &#about{
+      padding: variables.$spacing-sm 0;
+    }
+  }
+  .about-content {
+    width: 85vw;
+    padding: variables.$spacing-sm;
+    border-radius: variables.$border-radius-md;
+    margin: variables.$spacing-sm 0;
+  }
+  
+  .skills-list {
+    text-align: left;
+    columns: 2;
+    font-size: variables.$font-size-md;
+    margin: variables.$spacing-sm variables.$spacing-md;
+    gap: variables.$spacing-sm;
+  }
+}

@@ -1,6 +1,6 @@
 name: Publish Blazor App to GitHub Pages
 
-on: [ push, workflow_dispatch ]
+on: [ workflow_dispatch, pull_request ]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -28,25 +28,22 @@ jobs:
       with:
         dotnet-version: '9.x'
 
-    # - name: Set basepath on index.html
-    #   shell: pwsh
-    #   run: |
-    #     $filepath = "./src/BlazorApp/wwwroot/index.html"
-    #     $repository = "${{ github.repository }}" -replace "${{ github.repository_owner }}", ""
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
 
-    #     $html = Get-Content -Path $filepath
-    #     $html -replace "<base href=`"/`" />", "<base href=`"$repository/`" />" | Out-File -Path $filepath -Force
+    - name: Install npm dependencies
+      shell: bash
+      run: |
+        cd src/BlazorApp
+        npm install
 
-    # - name: Set basepath on JSON objects
-    #   shell: pwsh
-    #   run: |
-    #     $filepath = "./src/BlazorApp/wwwroot/sample-data"
-    #     $repository = "${{ github.repository }}" -replace "${{ github.repository_owner }}", ""
-
-    #     Get-ChildItem -Path $filepath -Filter "*.json" | ForEach-Object {
-    #       $json = Get-Content -Path $_.FullName
-    #       $json.Replace("../", "$repository/") | Out-File -Path $_.FullName -Force
-    #     }
+    - name: Build Sass
+      shell: bash
+      run: |
+        cd src/BlazorApp
+        npm run sass:build
 
     - name: Restore NuGet packages
       shell: bash
@@ -67,11 +64,12 @@ jobs:
       shell: bash
       run: |
         dotnet publish src/BlazorApp -c Release -o published
-
+        
     - name: Upload artifact for web
       uses: actions/upload-pages-artifact@v4
       with:
         path: published/wwwroot
+
 
   deploy:
     name: Deploy App to GitHub Pages
@@ -89,3 +87,17 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+
+  pr-preview:
+    name: Deploy PR Preview to GitHub Pages
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
+    needs:
+      - build_test_artifact
+    runs-on: ubuntu-latest
+    environment:
+      name: pr-${{ github.head_ref }}
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy PR Preview to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

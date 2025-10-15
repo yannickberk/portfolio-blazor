@@ -3,7 +3,7 @@
     {
         <img class="background" src="@(hero.Src)" alt="@(hero.Alt)" />
     }
-    <div style="position: absolute; top: 30%; left: 2rem;">
+    <div class="hero-text">
     @if (property is null)
     {
         <p><em>Loading...</em></p>
@@ -14,8 +14,10 @@
         <h2>@property.Title</h2>
     }
     </div>
-    <div style="position: absolute; bottom: 8rem; left: 50%;">
-        <img src="images/down-arrow.svg" style="height: 3rem; width: 3rem;" alt="scroll down" />
+    <div class="scroll-arrow-container">
+        <a href="#about" class="scroll-arrow">
+            <img src="images/down-arrow.svg" class="down-arrow" alt="scroll down" />
+        </a>
     </div>
 </section>
 

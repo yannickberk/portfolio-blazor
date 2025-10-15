@@ -1,0 +1,59 @@
+@use "../variables";
+
+section {
+  &#portfolio {
+    padding: variables.$spacing-md 0;
+  }
+}
+
+.portfolio-container {
+  display: flex;
+  flex-direction: row;
+  padding-top: variables.$spacing-md;
+  position: relative;
+}
+
+.portfolio-image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  padding-top: variables.$spacing-md;
+}
+
+.portfolio-hero-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  filter: blur(8px);
+  opacity: 0.3;
+  animation: slideInLeft 1s ease-out 0s 1;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: variables.$breakpoint-mobile) {
+  
+  section {
+    &#portfolio {
+      padding: variables.$spacing-sm 0;
+    }
+  }
+
+  .portfolio-container {
+    flex-direction: column;
+    padding-top: variables.$spacing-sm;
+  }
+  
+  .portfolio-image-container {
+    padding-top: variables.$spacing-sm;
+  }
+}
