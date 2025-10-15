@@ -1,21 +1,23 @@
+@use "../variables";
+
 footer {
-  background: $background-dark;
+  background: variables.$background-dark;
   color: white;
-  padding: $spacing-xl $spacing-md;
+  padding: variables.$spacing-xl variables.$spacing-md;
   text-align: center;
   
   .social-links {
     display: flex;
     justify-content: center;
-    gap: $spacing-md;
-    margin-bottom: $spacing-md;
+    gap: variables.$spacing-md;
+    margin-bottom: variables.$spacing-md;
     
     a {
       color: white;
       transition: all 0.3s ease;
       
       &:hover {
-        color: $secondary-color;
+        color: variables.$secondary-color;
         transform: translateY(-2px);
       }
     }
@@ -27,12 +29,12 @@ footer {
   }
 }
 
-@media (max-width: $breakpoint-mobile) {
+@media (max-width: variables.$breakpoint-mobile) {
   footer {
-    padding: $spacing-md $spacing-sm;
+    padding: variables.$spacing-md variables.$spacing-sm;
     
     .social-links {
-      gap: $spacing-sm;
+      gap: variables.$spacing-sm;
     }
   }
 }

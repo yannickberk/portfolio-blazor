@@ -1,7 +1,9 @@
+@use "../variables";
+
 .about-container {
   display: flex;
   flex-direction: row;
-  padding-top: $spacing-lg;
+  padding-top: variables.$spacing-lg;
 }
 
 .about-image-container {
@@ -19,22 +21,22 @@
 .about-description {
   max-width: 60%;
   align-self: center;
-  padding: 0 $spacing-lg;
+  padding: 0 variables.$spacing-lg;
 }
 
-@media (max-width: $breakpoint-mobile) {
+@media (max-width: variables.$breakpoint-mobile) {
   .about-container {
     flex-direction: column;
-    padding-top: $spacing-sm;
+    padding-top: variables.$spacing-sm;
   }
   
   .about-image-container {
     max-width: 100%;
-    margin-bottom: $spacing-md;
+    margin-bottom: variables.$spacing-md;
   }
   
   .about-description {
     max-width: 100%;
-    padding: 0 $spacing-sm;
+    padding: 0 variables.$spacing-sm;
   }
 }

@@ -1,3 +1,5 @@
+@use "../variables";
+
 .hero-text {
   position: absolute;
   top: 30%;
@@ -16,11 +18,11 @@
   width: 3rem;
 }
 
-@media (max-width: $breakpoint-mobile) {
+@media (max-width: variables.$breakpoint-mobile) {
   .hero-text {
     top: 40%;
-    left: $spacing-sm;
-    right: $spacing-sm;
+    left: variables.$spacing-sm;
+    right: variables.$spacing-sm;
     text-align: center;
   }
   

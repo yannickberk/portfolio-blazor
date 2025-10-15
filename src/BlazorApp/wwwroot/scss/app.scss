@@ -1,3 +1,6 @@
+@use "sass:meta";
+@use 'variables';
+
 /**
 * Main Sass file that imports all styles
 */
@@ -5,20 +8,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Montserrat:wght@200;400;600;800&display=swap");
 
 // Variables
-@import 'variables';
 
 // Base styles
-@import 'base';
+@include meta.load-css('base');
 
 // Components
-@import 'components/home';
-@import 'components/about';
-@import 'components/portfolio';
-@import 'components/header';
-@import 'components/footer';
+@include meta.load-css('components/home');
+@include meta.load-css('components/about');
+@include meta.load-css('components/portfolio');
+@include meta.load-css('components/header');
+@include meta.load-css('components/footer');
 
 // Utilities
-@import 'utilities';
+@include meta.load-css('utilities');
 
 // Blazor-specific styles
 #blazor-error-ui {

@@ -1,7 +1,9 @@
+@use "../variables";
+
 .portfolio-container {
   display: flex;
   flex-direction: row;
-  padding-top: $spacing-lg;
+  padding-top: variables.$spacing-lg;
   position: relative;
 }
 
@@ -35,10 +37,10 @@
   flex-basis: 40px;
 }
 
-@media (max-width: $breakpoint-mobile) {
+@media (max-width: variables.$breakpoint-mobile) {
   .portfolio-container {
     flex-direction: column;
-    padding-top: $spacing-sm;
+    padding-top: variables.$spacing-sm;
   }
   
   .portfolio-image-container {

@@ -1,6 +1,8 @@
+@use "variables";
+
 html {
   scroll-behavior: smooth;
-  --breakpoint-mobile: #{$breakpoint-mobile};
+  --breakpoint-mobile: #{variables.$breakpoint-mobile};
 }
 
 body {
@@ -8,8 +10,8 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-  font-family: $font-primary;
-  --semiwhite-bg: #{$semiwhite-bg};
+  font-family: variables.$font-primary;
+  --semiwhite-bg: #{variables.$semiwhite-bg};
 }
 
 div#main {
@@ -23,13 +25,13 @@ section {
   &.dark {
     min-height: 100vh;
     color: white;
-    background: $background-dark;
+    background: variables.$background-dark;
   }
 
   &.light {
-    color: $text-color;
-    background: $background-light;
-    padding: $spacing-xxl 0;
+    color: variables.$text-color;
+    background: variables.$background-light;
+    padding: variables.$spacing-xxl 0;
   }
 
   img.background {
@@ -48,7 +50,7 @@ section {
 // Typography
 h1 {
   font-weight: 300;
-  font-family: $font-heading;
+  font-family: variables.$font-heading;
   font-size: 7rem;
   margin: 0;
 }
@@ -89,16 +91,16 @@ li {
   line-height: 1.7;
 
   &::marker {
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 }
 
 a {
   text-decoration: none;
-  color: $text-color;
+  color: variables.$text-color;
 
   &:hover {
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 }
 
@@ -146,7 +148,7 @@ img.social-icon {
 }
 
 /* Responsive styles for mobile devices */
-@media (max-width: $breakpoint-mobile) {
+@media (max-width: variables.$breakpoint-mobile) {
   body {
     font-size: 1rem;
     overflow-x: hidden;
@@ -164,7 +166,7 @@ img.social-icon {
   }
   
   section.light {
-    padding: $spacing-sm 0rem;
+    padding: variables.$spacing-sm 0rem;
   }
   
   ul, ol {
@@ -181,7 +183,7 @@ img.social-icon {
   
   /* Mobile-specific scroll arrow adjustments */
   .scroll-arrow {
-    padding: $spacing-xs;
+    padding: variables.$spacing-xs;
 
     &:hover {
       transform: translateY(4px);
