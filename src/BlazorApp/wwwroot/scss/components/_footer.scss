@@ -1,40 +1,18 @@
 @use "../variables";
 
-footer {
-  background: variables.$background-dark;
-  color: white;
-  padding: variables.$spacing-xl variables.$spacing-md;
-  text-align: center;
-  
-  .social-links {
+#contact {
+  background-color: variables.$primary-color;
+  padding: 1rem 0 1rem;
+
+  .social-icons-container {
     display: flex;
     justify-content: center;
     gap: variables.$spacing-md;
-    margin-bottom: variables.$spacing-md;
-    
-    a {
-      color: white;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        color: variables.$secondary-color;
-        transform: translateY(-2px);
-      }
-    }
   }
-  
-  p {
-    margin: 0;
-    opacity: 0.8;
-  }
-}
 
-@media (max-width: variables.$breakpoint-mobile) {
-  footer {
-    padding: variables.$spacing-md variables.$spacing-sm;
-    
-    .social-links {
-      gap: variables.$spacing-sm;
-    }
+  p.footer-credit {
+    margin-top: 0;
+    color: variables.$text-color-light;
+    text-align: center;
   }
 }

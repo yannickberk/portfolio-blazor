@@ -1,14 +1,15 @@
 @use "../variables";
 
 .hero-text {
-  position: absolute;
-  top: 30%;
-  left: 2rem;
+  position: relative;
+  top: 30vh;
+  width: 92vw;
+  left: 4vw;
 }
 
 .scroll-arrow-container {
   position: absolute;
-  bottom: 8rem;
+  bottom: 15vh;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -18,11 +19,14 @@
   width: 3rem;
 }
 
-@media (max-width: variables.$breakpoint-mobile) {
+@media ((max-height: 650px)
+  and (not (max-width: variables.$breakpoint-mobile))
+  ) {
   .hero-text {
-    top: 40%;
-    left: variables.$spacing-sm;
-    right: variables.$spacing-sm;
-    text-align: center;
+    top: 25vh;
+
+    h1 {
+      font-size: variables.$font-heading-size-md;
+    }
   }
 }

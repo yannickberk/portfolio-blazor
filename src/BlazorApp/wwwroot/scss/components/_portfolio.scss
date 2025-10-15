@@ -23,7 +23,7 @@ section {
   height: 100%;
   z-index: -1;
   overflow: hidden;
-  padding: variables.$spacing-md;
+  padding-top: variables.$spacing-md;
 }
 
 .portfolio-hero-image {
@@ -40,10 +40,6 @@ section {
   z-index: 1;
 }
 
-.project-title {
-  flex-basis: 40px;
-}
-
 @media (max-width: variables.$breakpoint-mobile) {
   
   section {
@@ -58,6 +54,6 @@ section {
   }
   
   .portfolio-image-container {
-    padding: variables.$spacing-sm;
+    padding-top: variables.$spacing-sm;
   }
 }
