@@ -1,54 +1,42 @@
 @use "../variables";
 
-header {
+#header {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: variables.$spacing-md;
+  background: variables.$semiwhite-bg;
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: variables.$spacing-sm variables.$spacing-md;
-  
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    ul {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      gap: variables.$spacing-md;
-      
-      li {
-        a {
-          padding: variables.$spacing-xs variables.$spacing-sm;
-          border-radius: 4px;
-          transition: all 0.3s ease;
-          
-          &:hover {
-            background: rgba(78, 86, 126, 0.1);
-          }
-        }
-      }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  padding: variables.$spacing-sm;
+  top: 0;
+  width: 100vw;
+  z-index: 10;
+
+  a {
+    padding: variables.$spacing-xs variables.$spacing-sm;
+    color: #333;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: variables.$primary-color;
+      background: rgba(78, 86, 126, 0.3);
     }
   }
 }
 
 @media (max-width: variables.$breakpoint-mobile) {
-  header {
-    padding: variables.$spacing-xs variables.$spacing-sm;
-    
-    nav ul {
-      gap: variables.$spacing-sm;
-      
-      li a {
-        padding: variables.$spacing-xs;
-        font-size: 0.9rem;
-      }
+  #header {
+    gap: variables.$spacing-xs;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    a {
+      padding: variables.$spacing-xs variables.$spacing-xxs;
     }
   }
 }
