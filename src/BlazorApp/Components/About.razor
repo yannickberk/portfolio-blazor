@@ -43,14 +43,25 @@
     public required HttpClient Http { get; set; }
 
     [Parameter, EditorRequired]
-    public required HeroImageService HeroImageService { get; set; }
+    public required IHeroImageService HeroImageService { get; set; }
 
     private AboutMe? aboutme;
     private HeroImage? hero;
 
     protected override async Task OnInitializedAsync()
     {
-        aboutme = await Http.GetFromJsonAsync<AboutMe>("sample-data/aboutme.json");
+        try
+        {
+            aboutme = await Http.GetFromJsonAsync<AboutMe>("sample-data/aboutme.json");
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            aboutme = null;
+        }
+        catch (HttpRequestException)
+        {
+            aboutme = null;
+        }
         hero = await HeroImageService.GetHeroAsync(img => img.Name is "about");
 
     }

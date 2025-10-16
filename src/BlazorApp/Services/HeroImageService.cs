@@ -3,7 +3,7 @@ using BlazorApp.Models;
 
 namespace BlazorApp.Services;
 
-public sealed class HeroImageService : IDisposable
+public sealed class HeroImageService : IHeroImageService, IDisposable
 {
     private readonly HttpClient _client;
     private readonly Task<List<HeroImage>?> _getHeroImagesTask;
@@ -16,7 +16,7 @@ public sealed class HeroImageService : IDisposable
                 "sample-data/heroimages.json");
     }
 
-    internal async Task<HeroImage?> GetHeroAsync(Func<HeroImage, bool> predicate)
+    public async Task<HeroImage?> GetHeroAsync(Func<HeroImage, bool> predicate)
     {
         var heros = await _getHeroImagesTask;
         return heros?.FirstOrDefault(predicate);
@@ -24,4 +24,9 @@ public sealed class HeroImageService : IDisposable
         
 
     public void Dispose() => _client.Dispose();
+}
+
+public interface IHeroImageService
+{
+    Task<HeroImage?> GetHeroAsync(Func<HeroImage, bool> predicate);
 }
