@@ -12,13 +12,16 @@
     else
     {
         <p class="large">@aboutme.Description</p>
-        <hr />
-        <ul class="skills-list">
-        @foreach (var skill in aboutme.Skills)
+        @if (aboutme.Skills is not null && aboutme.Skills.Any())
         {
-            <li key="@skill">@skill</li>
+            <hr />
+            <ul class="skills-list">
+            @foreach (var skill in aboutme.Skills)
+            {
+                <li key="@skill">@skill</li>
+            }
+            </ul>
         }
-        </ul>
         <hr />
         <p class="quote">@aboutme.DetailOrQuote</p>
         @if (aboutme.CurrentlyLearning is not null && aboutme.CurrentlyLearning.Any())
