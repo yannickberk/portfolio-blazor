@@ -41,7 +41,7 @@
     public required HttpClient Http { get; set; }
 
     [Parameter, EditorRequired]
-    public required HeroImageService HeroImageService { get; set; }
+    public required IHeroImageService HeroImageService { get; set; }
 
     private List<Project>? projects;
     private HeroImage? hero;

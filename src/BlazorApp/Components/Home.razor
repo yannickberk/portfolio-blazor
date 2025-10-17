@@ -26,14 +26,26 @@
     public required HttpClient Http { get; set; }
 
     [Parameter, EditorRequired]
-    public required HeroImageService HeroImageService { get; set; }
+    public required IHeroImageService HeroImageService { get; set; }
 
     private SiteProperties? property;
     private HeroImage? hero;
 
     protected override async Task OnInitializedAsync()
     {
-        property = await Http.GetFromJsonAsync<SiteProperties>("sample-data/siteproperties.json");
+        try
+        {
+            property = await Http.GetFromJsonAsync<SiteProperties>("sample-data/siteproperties.json");
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            property = null;
+        }
+        catch (HttpRequestException)
+        {
+            property = null;
+        }
+        
         hero = await HeroImageService.GetHeroAsync(img => img.Name is "home");
     }
 }
