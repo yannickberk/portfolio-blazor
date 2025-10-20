@@ -356,3 +356,7 @@ src/BlazorApp/package-lock.json
 # Compiled Sass
 src/BlazorApp/wwwroot/css/app.css
 src/BlazorApp/wwwroot/css/app.css.map
+
+# Code coverage reports
+coverage-report/
+TestResults/
