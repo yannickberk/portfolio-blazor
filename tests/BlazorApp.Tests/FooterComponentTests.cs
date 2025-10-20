@@ -1,16 +1,22 @@
-using System.Net;
-using System.Net.Http.Json;
 using Bunit;
 using Xunit;
 using BlazorApp.Shared;
 using BlazorApp.Models;
+using BlazorApp.Services;
+using NSubstitute;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorApp.Tests;
 
+/// <summary>
+/// Tests for the Footer component to ensure proper rendering and data handling.
+/// </summary>
 public class FooterComponentTests : TestContext
 {
     private static SiteProperties SampleProperties => new()
     {
+        Title = "Jane Doe Portfolio",
         Name = "Jane Doe",
         Email = "jane@example.com",
         DevDotTo = "janedev",
@@ -34,45 +40,36 @@ public class FooterComponentTests : TestContext
         YouTube = "/img/youtube.svg"
     };
 
-    private static HttpClient CreateMockHttpClient(
-        SiteProperties? properties = null,
-        SocialIcons? icons = null)
+    /// <summary>
+    /// Configures test services with mocked dependencies.
+    /// </summary>
+    /// <param name="siteProperties">The site properties to return from the mock service.</param>
+    /// <param name="socialIcons">The social icons to return from the mock service.</param>
+    private void ConfigureServices(SiteProperties? siteProperties = null, SocialIcons? socialIcons = null)
     {
-        var handler = new DelegatingHandlerStub(async (request, cancellationToken) =>
-        {
-            if (request.RequestUri!.ToString().Contains("siteproperties.json"))
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = JsonContent.Create(properties)
-                };
-                return response;
-            }
-            if (request.RequestUri!.ToString().Contains("socialicons.json"))
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = JsonContent.Create(icons)
-                };
-                return response;
-            }
-            return new HttpResponseMessage(HttpStatusCode.NotFound);
-        });
-        return new HttpClient(handler)
-        {
-            BaseAddress = new Uri("http://localhost/")
-        };
+        var sitePropertiesService = Substitute.For<ISitePropertiesService>();
+        var socialIconsService = Substitute.For<ISocialIconsService>();
+        var logger = Substitute.For<ILogger<Footer>>();
+
+        sitePropertiesService.GetSitePropertiesAsync().Returns(Task.FromResult(siteProperties));
+        socialIconsService.GetSocialIconsAsync().Returns(Task.FromResult(socialIcons));
+
+        Services.AddSingleton(sitePropertiesService);
+        Services.AddSingleton(socialIconsService);
+        Services.AddSingleton(logger);
     }
 
     [Fact]
-    public void ShowsLoadingStateInitially()
+    [Trait("Category", "Loading")]
+    public void Render_WhenDataNotLoaded_ShowsLoadingState()
     {
-        var http = CreateMockHttpClient(null, null);
+        // Arrange
+        ConfigureServices(null, null);
 
-        var cut = RenderComponent<Footer>(parameters => parameters
-            .Add(p => p.Http, http)
-        );
+        // Act
+        var cut = RenderComponent<Footer>();
 
+        // Assert
         cut.MarkupMatches(@"
 <div id=""contact"">
     <div class=""social-icons-container"">
@@ -82,26 +79,30 @@ public class FooterComponentTests : TestContext
     }
 
     [Fact]
-    public async Task RendersAllSocialIconsAndFooterCredit()
+    [Trait("Category", "Data")]
+    public async Task RenderAsync_WithValidData_RendersAllSocialIconsAndFooterCredit()
     {
-        var http = CreateMockHttpClient(SampleProperties, SampleIcons);
+        // Arrange
+        ConfigureServices(SampleProperties, SampleIcons);
 
-        var cut = RenderComponent<Footer>(parameters => parameters
-            .Add(p => p.Http, http)
-        );
+        // Act
+        var cut = RenderComponent<Footer>();
         await cut.InvokeAsync(() => Task.CompletedTask);
 
+        // Assert
         var icons = cut.FindAll("img.social-icon");
         Assert.Equal(8, icons.Count);
-
         Assert.Contains("Created by Jane Doe", cut.Markup);
     }
 
     [Fact]
-    public async Task RendersOnlyNonEmptySocialLinks()
+    [Trait("Category", "Data")]
+    public async Task RenderAsync_WithEmptyAndNullSocialLinks_RendersOnlyValidLinks()
     {
+        // Arrange
         var props = new SiteProperties
         {
+            Title = SampleProperties.Title,
             Name = SampleProperties.Name,
             Email = SampleProperties.Email,
             DevDotTo = SampleProperties.DevDotTo,
@@ -112,44 +113,148 @@ public class FooterComponentTests : TestContext
             Twitter = "",
             YouTube = SampleProperties.YouTube
         };
-        var http = CreateMockHttpClient(props, SampleIcons);
+        ConfigureServices(props, SampleIcons);
 
-        var cut = RenderComponent<Footer>(parameters => parameters
-            .Add(p => p.Http, http)
-        );
+        // Act
+        var cut = RenderComponent<Footer>();
         await cut.InvokeAsync(() => Task.CompletedTask);
 
+        // Assert
         var icons = cut.FindAll("img.social-icon");
-        // Twitter and Medium should not be rendered
-        Assert.DoesNotContain(icons, i => i.GetAttribute("alt") == "Dev.to" && i.GetAttribute("src") == SampleIcons.Twitter);
-        Assert.DoesNotContain(icons, i => i.GetAttribute("alt") == "Dev.to" && i.GetAttribute("src") == SampleIcons.Medium);
-        // Instagram should be rendered
+        Assert.DoesNotContain(icons, i => i.GetAttribute("alt") == "Twitter");
+        Assert.DoesNotContain(icons, i => i.GetAttribute("alt") == "Medium");
         Assert.Contains(icons, i => i.GetAttribute("alt") == "Instagram");
     }
 
     [Fact]
-    public async Task NoIconsIfIconsDataMissing()
+    [Trait("Category", "Data")]
+    public async Task RenderAsync_WhenIconsDataMissing_DoesNotRenderIcons()
     {
-        var http = CreateMockHttpClient(SampleProperties, null);
+        // Arrange
+        ConfigureServices(SampleProperties, null);
 
-        var cut = RenderComponent<Footer>(parameters => parameters
-            .Add(p => p.Http, http)
-        );
+        // Act
+        var cut = RenderComponent<Footer>();
         await cut.InvokeAsync(() => Task.CompletedTask);
 
+        // Assert
         Assert.Empty(cut.FindAll("img.social-icon"));
     }
 
     [Fact]
-    public async Task FooterCreditNotRenderedIfPropertiesMissing()
+    [Trait("Category", "Data")]
+    public async Task RenderAsync_WhenPropertiesMissing_DoesNotRenderFooterCredit()
     {
-        var http = CreateMockHttpClient(null, SampleIcons);
+        // Arrange
+        ConfigureServices(null, SampleIcons);
 
-        var cut = RenderComponent<Footer>(parameters => parameters
-            .Add(p => p.Http, http)
-        );
+        // Act
+        var cut = RenderComponent<Footer>();
         await cut.InvokeAsync(() => Task.CompletedTask);
 
+        // Assert
         Assert.DoesNotContain("footer-credit", cut.Markup);
+    }
+
+    [Theory]
+    [Trait("Category", "Data")]
+    [InlineData("", "", false)]
+    [InlineData(null, null, false)]
+    [InlineData("John Doe", "john@example.com", true)]
+    [InlineData("Jane Smith", "", true)]
+    public async Task RenderAsync_WithVariousNameAndEmailCombinations_RendersFooterCreditCorrectly(
+        string? name, string? email, bool shouldShowCredit)
+    {
+        // Arrange
+        var properties = name is not null ? new SiteProperties 
+        { 
+            Name = name, 
+            Email = email ?? "",
+            Title = "Test",
+            DevDotTo = "",
+            GitHub = "",
+            Instagram = "",
+            LinkedIn = "",
+            Medium = "",
+            Twitter = "",
+            YouTube = ""
+        } : null;
+        ConfigureServices(properties, SampleIcons);
+
+        // Act
+        var cut = RenderComponent<Footer>();
+        await cut.InvokeAsync(() => Task.CompletedTask);
+
+        // Assert
+        if (shouldShowCredit && !string.IsNullOrEmpty(name))
+        {
+            Assert.Contains($"Created by {name}", cut.Markup);
+        }
+        else
+        {
+            Assert.DoesNotContain("Created by", cut.Markup);
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "UI")]
+    public async Task RenderAsync_Always_RendersContactSection()
+    {
+        // Arrange
+        ConfigureServices(SampleProperties, SampleIcons);
+
+        // Act
+        var cut = RenderComponent<Footer>();
+        await cut.InvokeAsync(() => Task.CompletedTask);
+
+        // Assert
+        Assert.Contains("id=\"contact\"", cut.Markup);
+        Assert.Contains("social-icons-container", cut.Markup);
+    }
+
+    [Theory]
+    [Trait("Category", "Accessibility")]
+    [InlineData("Email", "/img/email.svg")]
+    [InlineData("GitHub", "/img/github.svg")]
+    [InlineData("LinkedIn", "/img/linkedin.svg")]
+    public async Task RenderAsync_WithSocialIcons_IncludesProperAltAttributes(string expectedAlt, string iconSrc)
+    {
+        // Arrange
+        ConfigureServices(SampleProperties, SampleIcons);
+
+        // Act
+        var cut = RenderComponent<Footer>();
+        await cut.InvokeAsync(() => Task.CompletedTask);
+
+        // Assert
+        var icons = cut.FindAll("img.social-icon");
+        Assert.Contains(icons, icon => 
+            icon.GetAttribute("alt") == expectedAlt && 
+            icon.GetAttribute("src") == iconSrc);
+    }
+
+    [Fact]
+    [Trait("Category", "Error Handling")]
+    public async Task RenderAsync_WhenServiceThrowsException_ShowsLoadingState()
+    {
+        // Arrange
+        var sitePropertiesService = Substitute.For<ISitePropertiesService>();
+        var socialIconsService = Substitute.For<ISocialIconsService>();
+        var logger = Substitute.For<ILogger<Footer>>();
+
+        sitePropertiesService.GetSitePropertiesAsync().Returns<SiteProperties?>(_ => throw new InvalidOperationException("Test exception"));
+        socialIconsService.GetSocialIconsAsync().Returns<SocialIcons?>(_ => throw new InvalidOperationException("Test exception"));
+
+        Services.AddSingleton(sitePropertiesService);
+        Services.AddSingleton(socialIconsService);
+        Services.AddSingleton(logger);
+
+        // Act
+        var cut = RenderComponent<Footer>();
+        await cut.InvokeAsync(() => Task.CompletedTask);
+
+        // Assert
+        Assert.Contains("Loading...", cut.Markup);
+        Assert.Empty(cut.FindAll("img.social-icon"));
     }
 }

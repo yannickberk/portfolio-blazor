@@ -1,17 +1,23 @@
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject ISitePropertiesService SitePropertiesService
+@inject ISocialIconsService SocialIconsService
+@inject ILogger<Footer> Logger
+
 <div id="contact">
-    @if (property is null)
+    @if (property is null || icons is null)
     {
         <div class="social-icons-container">
             <p><em>Loading...</em></p>
         </div>
     }
-    else if (icons is not null)
+    else
     {
         <div class="social-icons-container">
             @if (string.IsNullOrWhiteSpace(property.Email) is false)
             {
                 <a href="mailto:@(property.Email)">
-                    <img src="@icons.Email" alt="email" class="social-icon" />
+                    <img src="@icons.Email" alt="Email" class="social-icon" />
                 </a>
             }
             @if (string.IsNullOrWhiteSpace(property.DevDotTo) is false)
@@ -35,48 +41,78 @@
             @if (string.IsNullOrWhiteSpace(property.LinkedIn) is false)
             {
                 <a href="https://linkedin.com/in/@(property.LinkedIn)" target="_blank" rel="noopener noreferrer">
-                    <img src="@icons.LinkedIn" alt="Dev.to" class="social-icon" />
+                    <img src="@icons.LinkedIn" alt="LinkedIn" class="social-icon" />
                 </a>
             }
             @if (string.IsNullOrWhiteSpace(property.Medium) is false)
             {
                 <a href="https://medium.com/@@@(property.Medium)" target="_blank" rel="noopener noreferrer">
-                    <img src="@icons.Medium" alt="Dev.to" class="social-icon" />
+                    <img src="@icons.Medium" alt="Medium" class="social-icon" />
                 </a>
             }
             @if (string.IsNullOrWhiteSpace(property.Twitter) is false)
             {
                 <a href="https://twitter.com/@(property.Twitter)" target="_blank" rel="noopener noreferrer">
-                    <img src="@icons.Twitter" alt="Dev.to" class="social-icon" />
+                    <img src="@icons.Twitter" alt="Twitter" class="social-icon" />
                 </a>
             }
             @if (string.IsNullOrWhiteSpace(property.YouTube) is false)
             {
                 <a href="https://youtube.com/@(property.YouTube)" target="_blank" rel="noopener noreferrer">
-                    <img src="@icons.YouTube" alt="Dev.to" class="social-icon" />
+                    <img src="@icons.YouTube" alt="YouTube" class="social-icon" />
                 </a>
             }
         </div>
-        <p class="small footer-credit">Created by @property.Name</p>
+        @if (!string.IsNullOrWhiteSpace(property.Name))
+        {
+            <p class="small footer-credit">Created by @property.Name</p>
+        }
     }
 </div>
 
 @code {
-    [Parameter, EditorRequired]
-    public required HttpClient Http { get; set; }
-
+    /// <summary>
+    /// Gets or sets the primary color for the footer component.
+    /// </summary>
     [Parameter]
     public string PrimaryColor { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the secondary color for the footer component.
+    /// </summary>
     [Parameter]
     public string SecondaryColor { get; set; } = string.Empty;
 
     private SiteProperties? property;
     private SocialIcons? icons;
 
+    /// <summary>
+    /// Initializes the component by loading site properties and social icons data.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        property = await Http.GetFromJsonAsync<SiteProperties>("sample-data/siteproperties.json");
-        icons = await Http.GetFromJsonAsync<SocialIcons>("sample-data/socialicons.json");
+        try
+        {
+            Logger.LogDebug("Initializing Footer component");
+
+            // Load data in parallel for better performance
+            var propertyTask = SitePropertiesService.GetSitePropertiesAsync();
+            var iconsTask = SocialIconsService.GetSocialIconsAsync();
+
+            await Task.WhenAll(propertyTask, iconsTask).ConfigureAwait(false);
+
+            property = await propertyTask;
+            icons = await iconsTask;
+
+            Logger.LogDebug("Footer component initialization completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while initializing Footer component");
+            
+            // Ensure UI shows loading state on error
+            property = null;
+            icons = null;
+        }
     }
 }

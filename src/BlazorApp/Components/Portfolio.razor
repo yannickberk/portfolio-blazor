@@ -1,9 +1,21 @@
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject IProjectService ProjectService
+@inject IHeroImageService HeroImageService
+@inject ILogger<Portfolio> Logger
+
 <section class="light" id="portfolio">
     <h2>Portfolio</h2>
     <div class="portfolio-container">
     @if (projects is null)
     {
         <p><em>Loading...</em></p>
+    }
+    else if (projects.Count == 0)
+    {
+        <div class="empty-state">
+            <p>No projects available at the moment.</p>
+        </div>
     }
     else
     {
@@ -37,18 +49,36 @@
 </section>
 
 @code {
-    [Parameter, EditorRequired]
-    public required HttpClient Http { get; set; }
-
-    [Parameter, EditorRequired]
-    public required IHeroImageService HeroImageService { get; set; }
-
-    private List<Project>? projects;
+    private IReadOnlyList<Project>? projects;
     private HeroImage? hero;
 
+    /// <summary>
+    /// Initializes the component by loading portfolio projects and hero image data.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        projects = await Http.GetFromJsonAsync<List<Project>>("sample-data/projects.json");
-        hero = await HeroImageService.GetHeroAsync(img => img.Name is "portfolio");
+        try
+        {
+            Logger.LogDebug("Initializing Portfolio component");
+
+            // Load data in parallel for better performance
+            var projectsTask = ProjectService.GetProjectsAsync();
+            var heroTask = HeroImageService.GetHeroAsync(img => img.Name == "portfolio");
+
+            await Task.WhenAll(projectsTask, heroTask).ConfigureAwait(false);
+
+            projects = await projectsTask;
+            hero = await heroTask;
+
+            Logger.LogDebug("Portfolio component initialization completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while initializing Portfolio component");
+            
+            // Ensure UI shows loading state on error
+            projects = null;
+            hero = null;
+        }
     }
 }

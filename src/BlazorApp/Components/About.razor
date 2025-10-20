@@ -1,3 +1,9 @@
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject IAboutMeService AboutMeService
+@inject IHeroImageService HeroImageService
+@inject ILogger<About> Logger
+
 <section class="light" id="about">
     @if (hero is not null)
     {
@@ -12,7 +18,7 @@
     else
     {
         <p class="large">@aboutme.Description</p>
-        @if (aboutme.Skills is not null && aboutme.Skills.Any())
+        @if (aboutme.Skills.Count > 0)
         {
             <hr />
             <ul class="skills-list">
@@ -24,7 +30,7 @@
         }
         <hr />
         <p class="quote">@aboutme.DetailOrQuote</p>
-        @if (aboutme.CurrentlyLearning is not null && aboutme.CurrentlyLearning.Any())
+        @if (aboutme.CurrentlyLearning.Count > 0)
         {
             <hr />
             <div class="currently-learning">
@@ -42,30 +48,36 @@
 </section>
 
 @code {
-    [Parameter, EditorRequired]
-    public required HttpClient Http { get; set; }
-
-    [Parameter, EditorRequired]
-    public required IHeroImageService HeroImageService { get; set; }
-
     private AboutMe? aboutme;
     private HeroImage? hero;
 
+    /// <summary>
+    /// Initializes the component by loading about me information and hero image data.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            aboutme = await Http.GetFromJsonAsync<AboutMe>("sample-data/aboutme.json");
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            aboutme = null;
-        }
-        catch (HttpRequestException)
-        {
-            aboutme = null;
-        }
-        hero = await HeroImageService.GetHeroAsync(img => img.Name is "about");
+            Logger.LogDebug("Initializing About component");
 
+            // Load data in parallel for better performance
+            var aboutMeTask = AboutMeService.GetAboutMeAsync();
+            var heroTask = HeroImageService.GetHeroAsync(img => img.Name == "about");
+
+            await Task.WhenAll(aboutMeTask, heroTask).ConfigureAwait(false);
+
+            aboutme = await aboutMeTask;
+            hero = await heroTask;
+
+            Logger.LogDebug("About component initialization completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while initializing About component");
+            
+            // Ensure UI shows loading state on error
+            aboutme = null;
+            hero = null;
+        }
     }
 }

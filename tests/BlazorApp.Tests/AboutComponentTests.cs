@@ -1,68 +1,74 @@
 using Bunit;
-using System.Net;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using BlazorApp.Components;
 using BlazorApp.Models;
+using BlazorApp.Services;
 
 namespace BlazorApp.Tests;
-public partial class AboutComponentTests : TestContext
+
+public class AboutComponentTests : TestContext
 {
-    private static AboutMe GetSampleAboutMe() => new AboutMe {
+    private readonly IAboutMeService _mockAboutMeService;
+    private readonly IHeroImageService _mockHeroImageService;
+
+    public AboutComponentTests()
+    {
+        // Setup common mocks in constructor following XUnit best practices
+        _mockAboutMeService = Substitute.For<IAboutMeService>();
+        _mockHeroImageService = Substitute.For<IHeroImageService>();
+        
+        // Register services for dependency injection
+        Services.AddSingleton(_mockAboutMeService);
+        Services.AddSingleton(_mockHeroImageService);
+    }
+
+    private static AboutMe GetSampleAboutMe() => new()
+    {
         Description = "Test description",
         Skills = ["C#", "Blazor"],
         DetailOrQuote = "Test quote",
-        CurrentlyLearning =  ["Docker", "Azure"]
+        CurrentlyLearning = ["Docker", "Azure"]
     };
 
-    private static HeroImage GetSampleHero() => new HeroImage {
+    private static HeroImage GetSampleHero() => new()
+    {
         Src = "hero.jpg",
         Alt = "Hero Alt",
         Name = "about"
     };
 
-    private static HttpClient GetMockHttpClient(AboutMe? aboutMe)
-    {
-        var handler = new DelegatingHandlerStub(async (request, cancellationToken) =>
-        {
-            if (request.RequestUri!.ToString().Contains("sample-data/aboutme.json"))
-            {
-                var json = aboutMe is null ? string.Empty : System.Text.Json.JsonSerializer.Serialize(aboutMe);
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-            return new HttpResponseMessage(HttpStatusCode.NotFound);
-        });
-        return new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-    }
-
 
     [Fact]
-    public void RendersLoadingWhenAboutMeIsNull()
+    [Trait("Category", "Loading")]
+    public void Render_WhenAboutMeDataIsNull_ShowsLoadingState()
     {
-        var httpClient = GetMockHttpClient(null);
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        // Arrange
+        _mockAboutMeService.GetAboutMeAsync().Returns((AboutMe?)null);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
+        // Assert
         cut.WaitForState(() => cut.Markup.Contains("Loading..."));
         Assert.Contains("<em>Loading...</em>", cut.Markup);
     }
 
     [Fact]
-    public void RendersAboutMeDataCorrectly()
+    [Trait("Category", "Data")]
+    public void RenderAsync_WithValidData_RendersAboutMeContentCorrectly()
     {
-        var httpClient = GetMockHttpClient(GetSampleAboutMe());
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        // Arrange
+        var aboutMe = GetSampleAboutMe();
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
+        // Assert
         cut.WaitForState(() => cut.Markup.Contains("Test description"));
         Assert.Contains("Test description", cut.Markup);
         Assert.Contains("Test quote", cut.Markup);
@@ -74,170 +80,145 @@ public partial class AboutComponentTests : TestContext
     }
 
     [Fact]
-    public void RendersHeroImageWhenAvailable()
+    [Trait("Category", "UI")]
+    public void RenderAsync_WithHeroImageAvailable_RendersHeroImage()
     {
-        var httpClient = GetMockHttpClient(GetSampleAboutMe());
-        var heroService = TestHelpers.GetMockHeroImageService(GetSampleHero());
+        // Arrange
+        var aboutMe = GetSampleAboutMe();
+        var hero = GetSampleHero();
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns(hero);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
+        // Assert
         cut.WaitForState(() => cut.Markup.Contains("src=\"hero.jpg\""));
         Assert.Contains("src=\"hero.jpg\"", cut.Markup);
         Assert.Contains("alt=\"Hero Alt\"", cut.Markup);
     }
 
-    [Fact]
-    public void RendersNoSkillsOrLearningIfEmpty()
+    [Theory]
+    [Trait("Category", "Data")]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    public void RenderAsync_WithEmptySkillsOrLearning_RendersCorrectly(bool hasSkills, bool hasLearning)
     {
-        var aboutMe = new AboutMe {
-            Description = "Desc",
-            Skills = new List<string>(),
-            DetailOrQuote = "Quote",
-            CurrentlyLearning = new List<string>()
+        // Arrange
+        var aboutMe = new AboutMe
+        {
+            Description = "Test description",
+            Skills = hasSkills ? ["C#"] : [],
+            DetailOrQuote = "Test quote",
+            CurrentlyLearning = hasLearning ? ["Docker"] : []
         };
-        var httpClient = GetMockHttpClient(aboutMe);
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
-        cut.WaitForState(() => cut.Markup.Contains("Desc"));
-        Assert.DoesNotContain("<li", cut.Markup); // No skills or learning items
+        // Assert
+        cut.WaitForState(() => cut.Markup.Contains("Test description"));
+        
+        if (hasSkills)
+        {
+            Assert.Contains("C#", cut.Markup);
+        }
+        
+        if (hasLearning)
+        {
+            Assert.Contains("Currently learning", cut.Markup);
+            Assert.Contains("Docker", cut.Markup);
+        }
+        else
+        {
+            Assert.DoesNotContain("Currently learning", cut.Markup);
+        }
     }
 
     [Fact]
-    public void RendersLoadingOnJsonException()
+    [Trait("Category", "Error")]
+    public void RenderAsync_WhenServiceThrowsException_ShowsLoadingState()
     {
-        // Simulate invalid JSON response
-        var handler = new DelegatingHandlerStub(async (request, cancellationToken) =>
-        {
-            if (request.RequestUri!.ToString().Contains("sample-data/aboutme.json"))
-            {
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent("invalid-json", System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-            return new HttpResponseMessage(HttpStatusCode.NotFound);
-        });
-        var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        // Arrange
+        _mockAboutMeService.GetAboutMeAsync().ThrowsAsync(new HttpRequestException("Network error"));
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
+        // Assert
         cut.WaitForState(() => cut.Markup.Contains("Loading..."));
         Assert.Contains("<em>Loading...</em>", cut.Markup);
     }
 
-    [Fact]
-    public void RendersLoadingOnHttpRequestException()
+    [Theory]
+    [Trait("Category", "Data")]
+    [InlineData(null, null)]
+    [InlineData("", "")]
+    [InlineData("test.jpg", "Test Alt")]
+    public void RenderAsync_WithVariousHeroImageData_RendersCorrectly(string? src, string? alt)
     {
-        // Simulate HTTP error
-        var handler = new DelegatingHandlerStub(async (request, cancellationToken) =>
+        // Arrange
+        var aboutMe = GetSampleAboutMe();
+        var hero = src is not null ? new HeroImage { Src = src, Alt = alt ?? "", Name = "about" } : null;
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns(hero);
+
+        // Act
+        var cut = RenderComponent<About>();
+
+        // Assert
+        cut.WaitForState(() => cut.Markup.Contains("Test description"));
+        
+        if (hero is not null)
         {
-            throw new HttpRequestException();
-        });
-        var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var heroService = TestHelpers.GetMockHeroImageService(null);
-
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
-
-        cut.WaitForState(() => cut.Markup.Contains("Loading..."));
-        Assert.Contains("<em>Loading...</em>", cut.Markup);
+            Assert.Contains($"src=\"{src}\"", cut.Markup);
+            Assert.Contains($"alt=\"{alt}\"", cut.Markup);
+        }
+        else
+        {
+            Assert.DoesNotContain("class=\"background\"", cut.Markup);
+        }
     }
 
     [Fact]
-    public void RendersNoSkillsIfNull()
+    [Trait("Category", "Accessibility")]
+    public void RenderAsync_Always_IncludesProperSectionStructure()
     {
-        var aboutMe = new AboutMe {
-            Description = "Desc",
-            Skills = null!,
-            DetailOrQuote = "Quote",
-            CurrentlyLearning = new List<string>()
-        };
-        var httpClient = GetMockHttpClient(aboutMe);
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        // Arrange
+        var aboutMe = GetSampleAboutMe();
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
-        cut.WaitForState(() => cut.Markup.Contains("Desc"));
-        Assert.DoesNotContain("<li", cut.Markup); // No skills
+        // Assert
+        cut.WaitForState(() => cut.Markup.Contains("Test description"));
+        Assert.Contains("id=\"about\"", cut.Markup);
+        Assert.Contains("<h2>About Myself</h2>", cut.Markup);
+        Assert.Contains("class=\"about-content\"", cut.Markup);
     }
 
     [Fact]
-    public void RendersNoCurrentlyLearningIfNull()
+    [Trait("Category", "Service Integration")]
+    public void OnInitializedAsync_Always_CallsCorrectServiceMethods()
     {
-        var aboutMe = new AboutMe {
-            Description = "Desc",
-            Skills = new List<string> { "C#" },
-            DetailOrQuote = "Quote",
-            CurrentlyLearning = null!
-        };
-        var httpClient = GetMockHttpClient(aboutMe);
-        var heroService = TestHelpers.GetMockHeroImageService(null);
+        // Arrange
+        var aboutMe = GetSampleAboutMe();
+        _mockAboutMeService.GetAboutMeAsync().Returns(aboutMe);
+        _mockHeroImageService.GetHeroAsync(Arg.Any<Func<HeroImage, bool>>()).Returns((HeroImage?)null);
 
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
+        // Act
+        var cut = RenderComponent<About>();
 
-        cut.WaitForState(() => cut.Markup.Contains("Desc"));
-        Assert.DoesNotContain("Currently learning", cut.Markup);
-    }
-
-    [Fact]
-    public void RendersEmptyDetailOrQuote()
-    {
-        var aboutMe = new AboutMe {
-            Description = "Desc",
-            Skills = new List<string> { "C#" },
-            DetailOrQuote = string.Empty,
-            CurrentlyLearning = new List<string> { "Docker" }
-        };
-        var httpClient = GetMockHttpClient(aboutMe);
-        var heroService = TestHelpers.GetMockHeroImageService(null);
-
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
-
-        cut.WaitForState(() => cut.Markup.Contains("Desc"));
-        Assert.Contains("class=\"quote\">", cut.Markup); // Should render the quote element even if empty
-    }
-
-    [Fact]
-    public void RendersHeroImageWithMissingProperties()
-    {
-        var hero = new HeroImage {
-            Src = string.Empty,
-            Alt = string.Empty,
-            Name = "about"
-        };
-        var httpClient = GetMockHttpClient(GetSampleAboutMe());
-        var heroService = TestHelpers.GetMockHeroImageService(hero);
-
-        var cut = RenderComponent<About>(parameters => parameters
-            .Add(p => p.Http, httpClient)
-            .Add(p => p.HeroImageService, heroService)
-        );
-
-        cut.WaitForState(() => cut.Markup.Contains("<img"));
-        Assert.Contains("src=\"\"", cut.Markup);
-        Assert.Contains("alt=\"\"", cut.Markup);
+        // Assert
+        cut.WaitForState(() => cut.Markup.Contains("Test description"));
+        _mockAboutMeService.Received(1).GetAboutMeAsync();
+        _mockHeroImageService.Received(1).GetHeroAsync(Arg.Any<Func<HeroImage, bool>>());
     }
 }

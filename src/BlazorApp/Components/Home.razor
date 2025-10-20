@@ -1,3 +1,9 @@
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject ISitePropertiesService SitePropertiesService
+@inject IHeroImageService HeroImageService
+@inject ILogger<Home> Logger
+
 <section class="dark" id="home">
     @if (hero is not null)
     {
@@ -22,30 +28,36 @@
 </section>
 
 @code {
-    [Parameter, EditorRequired]
-    public required HttpClient Http { get; set; }
-
-    [Parameter, EditorRequired]
-    public required IHeroImageService HeroImageService { get; set; }
-
     private SiteProperties? property;
     private HeroImage? hero;
 
+    /// <summary>
+    /// Initializes the component by loading site properties and hero image data.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            property = await Http.GetFromJsonAsync<SiteProperties>("sample-data/siteproperties.json");
+            Logger.LogDebug("Initializing Home component");
+
+            // Load data in parallel for better performance
+            var propertyTask = SitePropertiesService.GetSitePropertiesAsync();
+            var heroTask = HeroImageService.GetHeroAsync(img => img.Name == "home");
+
+            await Task.WhenAll(propertyTask, heroTask).ConfigureAwait(false);
+
+            property = await propertyTask;
+            hero = await heroTask;
+
+            Logger.LogDebug("Home component initialization completed successfully");
         }
-        catch (System.Text.Json.JsonException)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Error occurred while initializing Home component");
+            
+            // Ensure UI shows loading state on error
             property = null;
+            hero = null;
         }
-        catch (HttpRequestException)
-        {
-            property = null;
-        }
-        
-        hero = await HeroImageService.GetHeroAsync(img => img.Name is "home");
     }
 }
