@@ -26,24 +26,3 @@ jobs:
         run: |
           cd src/BlazorApp
           npm install
-
-      - name: Build Sass
-        shell: bash
-        run: |
-          cd src/BlazorApp
-          npm run sass:build
-
-      - name: Restore NuGet packages
-        shell: bash
-        run: |
-          dotnet restore .
-
-      - name: Build solution
-        shell: bash
-        run: |
-          dotnet build .
-
-      - name: Test solution
-        shell: bash
-        run: |
-          dotnet test . -c Release
