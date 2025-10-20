@@ -1,0 +1,49 @@
+name: Copilot Setup Steps
+
+on: [workflow_dispatch]
+
+jobs:
+  copilot-setup-steps:
+    name: Copilot Setup Steps
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install npm dependencies
+        shell: bash
+        run: |
+          cd src/BlazorApp
+          npm install
+
+      - name: Build Sass
+        shell: bash
+        run: |
+          cd src/BlazorApp
+          npm run sass:build
+
+      - name: Restore NuGet packages
+        shell: bash
+        run: |
+          dotnet restore .
+
+      - name: Build solution
+        shell: bash
+        run: |
+          dotnet build .
+
+      - name: Test solution
+        shell: bash
+        run: |
+          dotnet test . -c Release
