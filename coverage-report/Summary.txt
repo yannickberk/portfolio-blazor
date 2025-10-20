@@ -1,0 +1,39 @@
+Summary
+  Generated on: 10/20/2025 - 10:30:52
+  Coverage date: 10/20/2025 - 10:30:12
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 17
+  Files: 15
+  Line coverage: 51.1%
+  Covered lines: 205
+  Uncovered lines: 196
+  Coverable lines: 401
+  Total lines: 1063
+  Branch coverage: 77.9% (53 of 68)
+  Covered branches: 53
+  Total branches: 68
+  Method coverage: 68.8% (42 of 61)
+  Full method coverage: 67.2% (41 of 61)
+  Covered methods: 42
+  Fully covered methods: 41
+  Total methods: 61
+
+BlazorApp                                    51.1%
+  BlazorApp.Components.About                  100%
+  BlazorApp.Components.Home                   100%
+  BlazorApp.Components.Portfolio              100%
+  BlazorApp.Models.AboutMe                    100%
+  BlazorApp.Models.HeroImage                  100%
+  BlazorApp.Models.Project                    100%
+  BlazorApp.Models.SiteProperties             100%
+  BlazorApp.Models.SocialIcons                100%
+  BlazorApp.Services.AboutMeService             0%
+  BlazorApp.Services.HeroImageService           0%
+  BlazorApp.Services.ProjectService             0%
+  BlazorApp.Services.SitePropertiesService      0%
+  BlazorApp.Services.SocialIconsService         0%
+  BlazorApp.Shared.Footer                     100%
+  BlazorApp.Shared.Header                    94.7%
+  BlazorApp.Shared.MainLayout                   0%
+  Program                                       0%
