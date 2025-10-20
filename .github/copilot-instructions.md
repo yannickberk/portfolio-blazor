@@ -31,15 +31,46 @@
 - Use compressed CSS output for production (`sass:build`).
 - Tests use Bunit for rendering components and asserting markup/state. See `PortfolioComponentTests.cs`, `HeaderComponentTests.cs`, and `FooterComponentTests.cs` for examples.
 
+## Code Style
+- **Indentation:** 4 spaces for C#/Razor files, 2 spaces for JSON/YAML/XML files
+- **Line endings:** CRLF (Windows-style)
+- **Encoding:** UTF-8
+- **Naming conventions:** Follow C# standard conventions (PascalCase for classes/methods, camelCase for local variables)
+- See `.editorconfig` for complete style rules
+
 ## Integration Points
 - External dependencies: `Microsoft.AspNetCore.Components.WebAssembly`, `sass` (npm), Bunit, NSubstitute.
 - No backend/API integration; all data is static or loaded from local files.
 - Dev containers supported for Codespaces (see `.devcontainer/`).
 
+## Setup & Prerequisites
+- **Required:** .NET 9.0 SDK
+- **Required:** Node.js 18+ (for Sass compilation)
+- **Optional:** Docker/Dev Containers for Codespaces
+- Install npm dependencies before building: `cd src/BlazorApp && npm install`
+- The project uses a pre-build target to compile SCSS automatically
+
 ## Examples & How-Tos
 - To add a new section: create a Razor component in `Components/`, update `Pages/Index.razor`, and provide sample data in `wwwroot/sample-data/` if needed.
 - To add a new model: define it in `Models/` and update relevant services/components.
 - To add tests: use Bunit and xUnit in `tests/BlazorApp.Tests/`, mocking data/services as needed.
+
+## CI/CD & Deployment
+- **GitHub Pages:** Uses `.github/workflows/publish-gh-pages.yml` for automated deployment
+- **Azure Static Web Apps:** Uses `.github/workflows/azure-static-web-apps-zealous-island-0e8197c03.yml`
+- Both workflows:
+  1. Install Node.js dependencies
+  2. Compile Sass to CSS
+  3. Restore and build .NET solution
+  4. Run tests
+  5. Deploy to respective platforms
+- Pull requests trigger builds and tests automatically
+
+## Common Issues & Troubleshooting
+- **Build error "npm not found":** Install Node.js 18+ and run `npm install` in `src/BlazorApp/`
+- **SCSS compilation errors:** Ensure `sass` package is installed via `npm install`
+- **Test failures:** Check that all sample data files in `wwwroot/sample-data/` are valid JSON
+- **Missing dependencies:** Run `dotnet restore` from repository root
 
 ---
 
