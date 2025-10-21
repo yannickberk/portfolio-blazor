@@ -116,10 +116,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete PR Preview Environment
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         uses: actions/github-script@v7
         with:
           script: |
-            const environment = `pr-${context.payload.pull_request.head.ref}`;
+            // Use the same environment naming as pr-preview job
+            const environment = `pr-${process.env.HEAD_REF}`;
 
             try {
               // Get the environment
