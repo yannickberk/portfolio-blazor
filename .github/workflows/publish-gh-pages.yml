@@ -14,10 +14,14 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
+# Concurrency control to prevent deployment conflicts
+# - PR cleanup jobs get their own concurrency group (pages-cleanup-{PR_NUMBER})
+#   to prevent cancellation when main branch deploys after merge
+# - Regular deployments use the 'pages' group
+# - cancel-in-progress is disabled for cleanup jobs to ensure they complete
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' && format('pages-cleanup-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
 
 jobs:
   build_test_artifact:
