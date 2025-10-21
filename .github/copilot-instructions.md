@@ -25,6 +25,7 @@
 ## Conventions & Patterns
 - Use early returns whenever possible.
 - All data-driven components load their data asynchronously from JSON files or services.
+- Prefer dependency injection for services (e.g., `HttpClient`, data services).
 - Use `[Parameter, EditorRequired]` for required component parameters.
 - Service classes implement interfaces for DI and testability.
 - Static assets (images, JSON) are served from `wwwroot/`.
@@ -32,7 +33,7 @@
 - Tests use Bunit for rendering components and asserting markup/state. See `PortfolioComponentTests.cs`, `HeaderComponentTests.cs`, and `FooterComponentTests.cs` for examples.
 
 ## Code Style
-- **Indentation:** 4 spaces for C#/Razor files, 2 spaces for JSON/YAML/XML files
+- **Indentation:** 4 spaces for C# and Razor files, 2 spaces for JSON/YAML/XML files
 - **Line endings:** CRLF (Windows-style)
 - **Encoding:** UTF-8
 - **Naming conventions:** Follow C# standard conventions (PascalCase for classes/methods, camelCase for local variables)
