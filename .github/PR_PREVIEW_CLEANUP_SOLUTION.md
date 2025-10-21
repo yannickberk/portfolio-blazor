@@ -1,5 +1,7 @@
 # PR Preview Environment Cleanup Solution
 
+> **⚠️ Important Setup Required**: Environment cleanup requires a Personal Access Token (PAT) with repository administration permissions. See [ENVIRONMENT_CLEANUP_SETUP.md](./ENVIRONMENT_CLEANUP_SETUP.md) for setup instructions.
+
 ## Problem
 
 When merging a PR, the workflow for cleaning up PR preview environments would be canceled before completion:
@@ -9,6 +11,8 @@ When merging a PR, the workflow for cleaning up PR preview environments would be
 3. Both workflows use the same concurrency group (`pages`) with `cancel-in-progress: true`
 4. Main branch workflow cancels the PR branch workflow
 5. Cleanup job never runs → orphaned preview environments persist
+
+**Additionally**, GitHub Actions' default `GITHUB_TOKEN` does not have permission to delete environments, which would prevent cleanup even if the workflow completed successfully.
 
 ## Solution
 
@@ -134,6 +138,10 @@ Common alternatives:
 
 Both workflows require:
 - `contents: write` (or `read` for cleanup-only)
-- `deployments: write` (to delete environments)
+- `deployments: write` (to manage deployments)
 - `pages: write` (for deployments)
 - `id-token: write` (for GitHub Pages)
+
+**Important**: The default `GITHUB_TOKEN` does NOT have permission to delete environments. To enable environment cleanup, you must configure a Personal Access Token (PAT) with `repo` scope. See [ENVIRONMENT_CLEANUP_SETUP.md](./ENVIRONMENT_CLEANUP_SETUP.md) for detailed setup instructions.
+
+Without a PAT configured as `ENV_CLEANUP_TOKEN` secret, the environment deletion steps will fail gracefully without breaking the workflow.
