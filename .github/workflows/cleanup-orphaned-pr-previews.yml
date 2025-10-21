@@ -31,12 +31,15 @@ jobs:
             console.log(`Found ${environments.total_count} environments`);
             
             // Get all open PRs
-            const { data: openPRs } = await github.rest.pulls.list({
-              owner,
-              repo,
-              state: 'open',
-              per_page: 100
-            });
+            const openPRs = await github.paginate(
+              github.rest.pulls.list,
+              {
+                owner,
+                repo,
+                state: 'open',
+                per_page: 100
+              }
+            );
             
             const openPRBranches = new Set(openPRs.map(pr => pr.head.ref));
             console.log(`Found ${openPRBranches.size} open PRs`);
