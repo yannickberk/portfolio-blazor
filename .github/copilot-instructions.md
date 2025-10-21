@@ -57,13 +57,12 @@
 
 ## CI/CD & Deployment
 - **GitHub Pages:** Uses `.github/workflows/publish-gh-pages.yml` for automated deployment
-- **Azure Static Web Apps:** Uses `.github/workflows/azure-static-web-apps-zealous-island-0e8197c03.yml`
-- Both workflows:
-  1. Install Node.js dependencies
-  2. Compile Sass to CSS
-  3. Restore and build .NET solution
-  4. Run tests
-  5. Deploy to respective platforms
+- The workflow:
+  1. Installs Node.js dependencies
+  2. Compiles Sass to CSS
+  3. Restores and builds .NET solution
+  4. Runs tests
+  5. Deploys to GitHub Pages
 - Pull requests trigger builds and tests automatically
 
 ## Common Issues & Troubleshooting
