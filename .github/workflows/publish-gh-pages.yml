@@ -13,6 +13,8 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  deployments: write
+  environments: write
 
 # Concurrency control to prevent deployment conflicts
 # - PR cleanup jobs get their own concurrency group (pages-cleanup-{PR_NUMBER})
