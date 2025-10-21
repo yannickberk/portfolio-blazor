@@ -14,10 +14,11 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
+# Allow one concurrent deployment per type
+# Separate concurrency groups to prevent cleanup jobs from being canceled
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' && format('pages-cleanup-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
 
 jobs:
   build_test_artifact:
