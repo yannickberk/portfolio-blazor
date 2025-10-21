@@ -41,19 +41,18 @@ jobs:
               }
             );
             
-            const openPRBranches = new Set(openPRs.map(pr => pr.head.ref));
-            console.log(`Found ${openPRBranches.size} open PRs`);
+            // Build a set of expected PR environment names
+            const expectedPREnvironmentNames = new Set(openPRs.map(pr => `pr-${pr.head.ref}`));
+            console.log(`Found ${expectedPREnvironmentNames.size} open PRs`);
             
             let cleanedCount = 0;
             
             // Check each environment that looks like a PR preview
             for (const environment of environments.environments) {
               if (environment.name.startsWith('pr-')) {
-                const branchName = environment.name.substring(3); // Remove 'pr-' prefix
-                
-                // If this PR is not open, delete the environment
-                if (!openPRBranches.has(branchName)) {
-                  console.log(`Deleting orphaned environment: ${environment.name} (branch: ${branchName})`);
+                // If this environment is not associated with any open PR, delete it
+                if (!expectedPREnvironmentNames.has(environment.name)) {
+                  console.log(`Deleting orphaned environment: ${environment.name}`);
                   
                   try {
                     await github.rest.repos.deleteAnEnvironment({
