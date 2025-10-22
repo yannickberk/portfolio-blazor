@@ -1,5 +1,8 @@
 # .NET (Blazor) Portfolio Site with GitHub Codespaces
 
+[![Deployment Status](https://github.com/yannickberk/portfolio-blazor/actions/workflows/publish-gh-pages.yml/badge.svg)](https://github.com/yannickberk/portfolio-blazor/actions/workflows/publish-gh-pages.yml)
+[![CodeQL Analysis](https://github.com/yannickberk/portfolio-blazor/actions/workflows/codeql.yml/badge.svg)](https://github.com/yannickberk/portfolio-blazor/actions/workflows/codeql.yml)
+
 This repo used the .NET (Blazor) Portfolio template to build a .NET personal portfolio frontend web application using the Blazor WebAssembly framework.
 
 ## 📚 Resources
