@@ -1,5 +1,6 @@
 # .NET (Blazor) Portfolio Site with GitHub Codespaces
 
+[![Visit site](https://img.shields.io/badge/Portfolio-Visit-blue?logo=github&logoColor=white)](https://yannickberk.github.io/portfolio-blazor/)
 [![Deployment Status](https://github.com/yannickberk/portfolio-blazor/actions/workflows/publish-gh-pages.yml/badge.svg)](https://github.com/yannickberk/portfolio-blazor/actions/workflows/publish-gh-pages.yml)
 [![CodeQL Analysis](https://github.com/yannickberk/portfolio-blazor/actions/workflows/codeql.yml/badge.svg)](https://github.com/yannickberk/portfolio-blazor/actions/workflows/codeql.yml)
 
