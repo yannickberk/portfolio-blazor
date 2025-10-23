@@ -1,0 +1,20 @@
+# Ignore git and local OS files
+.git
+.gitignore
+.vs
+*.user
+*.suo
+
+# Node and build artifacts
+node_modules
+wwwroot/css/*.map
+bin/
+obj/
+TestResults/
+*.log
+
+# Editor files
+.vscode
+
+# npm debug
+npm-debug.log*

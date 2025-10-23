@@ -1,0 +1,53 @@
+replicaCount: 3
+
+image:
+  repository: localhost:5000
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    ephemeralstorage: 256Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+    ephemeralstorage: 1Gi
+
+readinessProbe:
+  path: /healthz
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+livenessProbe:
+  path: /healthz
+  initialDelaySeconds: 30
+  periodSeconds: 30
+
+hpa:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 50
+
+ingress:
+  enabled: false
+  host: blazorapp.example.com
+  annotations: {}
+  tls: false
+  tlsSecretName: blazorapp-tls
+
+podAntiAffinity:
+  enabled: true
+
+metrics:
+  enabled: true
+  exporter:
+    image: "nginx/nginx-prometheus-exporter:0.10.0"
+    port: 9113
+

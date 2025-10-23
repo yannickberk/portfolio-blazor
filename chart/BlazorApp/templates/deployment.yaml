@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blazorapp.fullname" . }}
+  labels:
+    app: {{ include "blazorapp.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "blazorapp.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "blazorapp.name" . }}
+    spec:
+      securityContext:
+        runAsNonRoot: false
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ include "blazorapp.name" . }}
+          image: "{{- if .Values.image.repository }}{{ .Values.image.repository }}/{{ end -}}{{ include "blazorapp.name" . }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: 80
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: 80
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+              ephemeral-storage: {{ .Values.resources.requests.ephemeralstorage }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+              ephemeral-storage: {{ .Values.resources.limits.ephemeralstorage }}
+        {{- if .Values.metrics.enabled }}
+        - name: nginx-prometheus-exporter
+          image: {{ .Values.metrics.exporter.image }}
+          args:
+            - -nginx.scrape-uri=http://127.0.0.1:80/nginx_status
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.exporter.port }}
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+        {{- end }}
+      {{- if .Values.podAntiAffinity.enabled }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ include "blazorapp.name" . }}
+      {{- end }}

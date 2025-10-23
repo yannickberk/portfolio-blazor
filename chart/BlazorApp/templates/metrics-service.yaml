@@ -1,0 +1,16 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "blazorapp.fullname" . }}-metrics
+  labels:
+    app: {{ include "blazorapp.name" . }}
+spec:
+  ports:
+    - port: {{ .Values.metrics.exporter.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app: {{ include "blazorapp.name" . }}
+{{- end }}
