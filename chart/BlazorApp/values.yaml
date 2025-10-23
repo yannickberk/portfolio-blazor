@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: localhost:5000
-  tag: "1.0.0"
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 service:
@@ -50,4 +50,12 @@ metrics:
   exporter:
     image: "nginx/nginx-prometheus-exporter:0.10.0"
     port: 9113
+
+prometheus:
+  enabled: true
+  serviceMonitor:
+    interval: 15s
+
+prometheusAdapter:
+  enabled: true
 

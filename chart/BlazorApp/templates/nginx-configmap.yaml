@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "blazorapp.fullname" . }}-nginx-config
+  labels:
+    app: {{ include "blazorapp.name" . }}
+data:
+  default.conf: |-
+    server {
+        listen       80;
+        server_name  localhost;
+
+        # Serve files from the published Blazor wwwroot
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Serve root and enable SPA fallback to index.html for client-side routing.
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Ensure index.html is not cached so browser picks up new deployments quickly
+        location = /index.html {
+            add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+            try_files $uri =404;
+        }
+
+        # Static assets - enable long cache durations
+        location ~* \.(?:css|js|woff2?|ttf|otf|eot|svg|png|jpg|jpeg|gif|ico)$ {
+            try_files $uri =404;
+            add_header Cache-Control "public, max-age=31536000, immutable";
+            access_log off;
+        }
+
+        # Expose a simple health endpoint
+        location = /healthz {
+            return 200 'ok';
+            add_header Content-Type text/plain;
+        }
+
+        # Explicit stub_status endpoint. Use exact match (no trailing slash)
+        # so the SPA `try_files` fallback won't serve index.html for this path.
+        location = /nginx_status {
+            stub_status;
+            allow 127.0.0.1;
+            allow 10.0.0.0/8;
+            deny all;
+        }
+    }

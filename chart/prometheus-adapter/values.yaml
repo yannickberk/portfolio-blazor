@@ -1,0 +1,15 @@
+adapter:
+  enabled: true
+
+# Example:
+rules:
+  custom:
+    - seriesQuery: 'nginx_http_requests_total'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+      name:
+        matches: "^nginx_http_requests_total"
+        as: "nginx_requests_per_second"
+      metricsQuery: "sum(rate(nginx_http_requests_total[1m])) by (pod)"

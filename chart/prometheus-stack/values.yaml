@@ -1,0 +1,17 @@
+kubePrometheusStack:
+  enabled: true
+
+# Example: to customize Prometheus storage/retention, override values here or provide a file
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 10Gi
+
+grafana:
+  enabled: false

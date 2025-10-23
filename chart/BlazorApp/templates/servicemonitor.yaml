@@ -1,0 +1,18 @@
+{{- if and .Values.metrics.enabled .Values.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "blazorapp.fullname" . }}-sm
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "blazorapp.name" . }}
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.prometheus.serviceMonitor.interval }}
+      path: /metrics
+{{- end }}
