@@ -1,4 +1,4 @@
-replicaCount: 3
+replicaCount: 1
 
 image:
   repository: localhost:5000
@@ -30,7 +30,7 @@ livenessProbe:
   periodSeconds: 30
 
 hpa:
-  enabled: true
+  enabled: false
   minReplicas: 3
   maxReplicas: 6
   targetCPUUtilizationPercentage: 50

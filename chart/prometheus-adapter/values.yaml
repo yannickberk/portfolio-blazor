@@ -1,15 +1,22 @@
 adapter:
   enabled: true
 
-# Example:
-rules:
-  custom:
-    - seriesQuery: 'nginx_http_requests_total'
-      resources:
-        overrides:
-          namespace:
-            resource: namespace
-      name:
-        matches: "^nginx_http_requests_total"
-        as: "nginx_requests_per_second"
-      metricsQuery: "sum(rate(nginx_http_requests_total[1m])) by (pod)"
+# Prometheus settings for the upstream prometheus-adapter chart (ensures --prometheus-url is set)
+prometheus-adapter:
+  prometheus:
+    url: http://prometheus-kube-prometheus-prometheus.monitoring.svc
+    port: 9090
+    path: ""
+  rules:
+    custom:
+      - seriesQuery: 'nginx_http_requests_total{namespace!="",pod!=""}'
+        resources:
+          overrides:
+            namespace:
+              resource: namespace
+            pod:
+              resource: pod
+        name:
+          matches: "^(nginx_http_requests_total)$"
+          as: "nginx_requests_per_second"
+        metricsQuery: 'sum(rate(nginx_http_requests_total{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
