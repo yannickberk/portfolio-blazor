@@ -31,5 +31,5 @@ spec:
           name: nginx_requests_per_second
         target:
           type: AverageValue
-          averageValue: "5"
+          averageValue: "10"
 {{- end }}

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "blazorapp.fullname" . }}-k6-script
+  labels:
+    app: {{ include "blazorapp.name" . }}
+data:
+  script.js: |
+    import http from 'k6/http';
+    import { check, sleep } from 'k6';
+
+    // In-cluster, the service is reachable by DNS: <release>-svc.default.svc.cluster.local
+    const TARGET = 'http://' + (typeof __ENV.TARGET_SERVICE !== 'undefined' ? __ENV.TARGET_SERVICE : '{{ include "blazorapp.fullname" . }}-svc');
+
+    export const options = {
+      vus: 2000,
+      duration: '2m',
+    };
+
+    export default function () {
+      const res = http.get(TARGET + '/');
+      check(res, { 'status was 200': (r) => r.status == 200 });
+      sleep(1);
+    }

@@ -19,4 +19,4 @@ prometheus-adapter:
         name:
           matches: "^(nginx_http_requests_total)$"
           as: "nginx_requests_per_second"
-        metricsQuery: 'sum(rate(nginx_http_requests_total{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
+        metricsQuery: 'sum(rate(nginx_http_requests_total{<<.LabelMatchers>>}[1m])) by (<<.GroupBy>>)'

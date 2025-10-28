@@ -38,7 +38,7 @@ function Wait-For-PodsReady {
         $allReady = $true
         foreach ($p in $pods.items) {
             $cs = $p.status.containerStatuses
-            if ($cs -eq $null) { $allReady = $false; break }
+            if ($null -eq $cs) { $allReady = $false; break }
             foreach ($c in $cs) {
                 if (-not $c.ready) { $allReady = $false; break }
             }

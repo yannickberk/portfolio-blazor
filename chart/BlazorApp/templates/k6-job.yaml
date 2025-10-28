@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "blazorapp.fullname" . }}-k6
+  labels:
+    app: {{ include "blazorapp.name" . }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      containers:
+        - name: k6
+          image: loadimpact/k6:0.43.0
+          command: ["k6", "run", "script.js"]
+          env:
+            - name: TARGET_SERVICE
+              value: "{{ include "blazorapp.fullname" . }}-svc"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+              ephemeral-storage: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+              ephemeral-storage: "1Gi"
+          volumeMounts:
+            - name: k6-script
+              mountPath: /scripts
+              readOnly: true
+          workingDir: /scripts
+      volumes:
+        - name: k6-script
+          configMap:
+            name: {{ include "blazorapp.fullname" . }}-k6-script
+            items:
+              - key: script.js
+                path: script.js
